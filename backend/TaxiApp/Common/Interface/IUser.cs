@@ -11,5 +11,6 @@ namespace Common.Interface
     public interface IUser : IService
     {
         Task<bool> LoginAsync(LoginDto logDto);
+        Task<bool> RegisterAsync(RegisterDto registerDto);
     }
 }

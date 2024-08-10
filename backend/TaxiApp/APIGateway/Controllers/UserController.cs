@@ -7,7 +7,7 @@ using Microsoft.ServiceFabric.Services.Client;
 namespace APIGateway.Controllers
 {
     [ApiController]
-    [Route("test")]
+    [Route("user")]
     public class UserController : ControllerBase
     {
         [HttpPost]
@@ -16,16 +16,32 @@ namespace APIGateway.Controllers
         {
             try
             {
-                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/api/UserService"), new ServicePartitionKey(1));
+                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
                 var data = await proxy.LoginAsync(loginData);
 
                 return Ok(data);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return BadRequest(ex.Message);
             }
+        }
 
+        [HttpPost]
+        [Route("register")]
+        public async Task<IActionResult> RegisterAsync(RegisterDto registerData)
+        {
+            try
+            {
+                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
+                var temp = await proxy.RegisterAsync(registerData);
+
+                return Ok(temp);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
