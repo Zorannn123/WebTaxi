@@ -24,7 +24,7 @@ namespace Common.Models
         [DataMember]
         public string? LastName { get; set; }
         [DataMember]
-        public DateTime DateOfBirth { get; set; }
+        public string? DateOfBirth { get; set; }
         [DataMember]
         public string? Address { get; set; }
         [DataMember]

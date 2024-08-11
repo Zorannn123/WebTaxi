@@ -12,5 +12,7 @@ namespace Common.Interface
     {
         Task<bool> LoginAsync(LoginDto logDto);
         Task<bool> RegisterAsync(RegisterDto registerDto);
+        Task<UserDto> GetCurrentUserAsync(string email);
+        Task<bool> EditProfileAsync(UserDto userDto);
     }
 }

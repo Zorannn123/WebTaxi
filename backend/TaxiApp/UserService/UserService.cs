@@ -18,6 +18,9 @@ using Common.Interface;
 using Common.TableStorage;
 using System.Text;
 using System.Drawing;
+using Common.Enum;
+using System.Fabric.Management.ServiceModel;
+using System.Fabric.Description;
 
 namespace UserService
 {
@@ -190,6 +193,98 @@ namespace UserService
             }
         }
 
+        public async Task<UserDto> GetCurrentUserAsync(string email)
+        {
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currUser = await usersDictionary.TryGetValueAsync(transaction, email);
+                if (currUser.HasValue)
+                {
+                    User user = currUser.Value;
+                    UserDto result = new()
+                    {
+                        Email = user.Email,
+                        UserName = user.UserName,
+                        Password = user.Password,
+                        Address = user.Address,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        DateOfBirth = user.DateOfBirth,
+                        Role = user.UserType.ToString(),
+                        Image = user.Image
+                    };
+                    return result;
+                }
+                return null;
+            }
+        }
 
+        public async Task<bool> EditProfileAsync(UserDto userDto)
+        {
+            bool temp = false;
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currProfile = await usersDictionary.TryGetValueAsync(transaction, userDto.Email);
+                if (currProfile.HasValue)
+                {
+                    User currUserCredentials = currProfile.Value;
+
+                    User newUserCredentials = currUserCredentials;
+
+                    if (userDto.FirstName != null)
+                    {
+                        newUserCredentials.FirstName = userDto.FirstName;
+                    }
+
+                    if (userDto.LastName != null)
+                    {
+                        newUserCredentials.LastName = userDto.LastName;
+                    }
+
+                    if (userDto.Address != null)
+                    {
+                        newUserCredentials.Address = userDto.Address;
+                    }
+
+                    if (userDto.UserName != null)
+                    {
+                        newUserCredentials.UserName = userDto.UserName;
+                    }
+
+                    if (userDto.DateOfBirth != null)
+                    {
+                        newUserCredentials.DateOfBirth = userDto.DateOfBirth;
+                    }
+                    if (userDto.Password != null)
+                    {
+                        newUserCredentials.Password = HashPassword(userDto.Password);
+                    }
+                    if (!string.IsNullOrEmpty(userDto.Image))
+                    {
+                        string imageUrl = UploadUserImage(userDto.Image);
+                        newUserCredentials.Image = imageUrl;
+                    }
+
+
+                    try
+                    {
+                        await usersDictionary.TryUpdateAsync(transaction, userDto.Email, newUserCredentials, currUserCredentials);
+                        await transaction.CommitAsync();
+                        temp = true;
+                    }catch(Exception ex)
+                    {
+                        temp = false;
+                        transaction.Abort();
+                    }
+
+                }
+                else
+                {
+                    temp = false;
+                }
+
+            }
+            return temp;
+        }
     }
 }

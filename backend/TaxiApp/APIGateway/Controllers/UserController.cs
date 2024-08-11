@@ -43,5 +43,39 @@ namespace APIGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost]
+        [Route("editProfile")]
+        public async Task<IActionResult> EditProfileAsync(UserDto userData)
+        {
+            try
+            {
+                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
+                var temp = await proxy.EditProfileAsync(userData);
+                return Ok(temp);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("currentProfile")]
+        public async Task<IActionResult> GetProfileAsync(string email)
+        {
+            try
+            {
+                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
+                var temp = await proxy.GetCurrentUserAsync(email);
+
+                return Ok(temp);
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                return BadRequest(message);
+            }
+        }
     }
 }
