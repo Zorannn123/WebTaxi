@@ -38,6 +38,19 @@ namespace APIGateway
 
                         var builder = WebApplication.CreateBuilder();
 
+                         builder.Services.AddCors(options =>
+                        {
+                            options.AddPolicy("AllowReactApp",
+                                builder =>
+                                {
+                                    builder.WithOrigins("http://localhost:8003") // URL of your React app
+                                           .AllowAnyHeader()
+                                           .AllowAnyMethod();
+                                });
+                        });
+
+
+
                         builder.Services.AddSingleton<StatelessServiceContext>(serviceContext);
                         builder.WebHost
                                     .UseKestrel()
@@ -53,8 +66,10 @@ namespace APIGateway
                         app.UseSwagger();
                         app.UseSwaggerUI();
                         }
+                        app.UseCors("AllowReactApp");
                         app.UseAuthorization();
                         app.MapControllers();
+
                         
                         return app;
 
