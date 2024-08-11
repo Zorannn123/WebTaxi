@@ -29,7 +29,7 @@ namespace APIGateway.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> RegisterAsync(RegisterDto registerData)
+        public async Task<IActionResult> RegisterAsync([FromBody]RegisterDto registerData)
         {
             try
             {

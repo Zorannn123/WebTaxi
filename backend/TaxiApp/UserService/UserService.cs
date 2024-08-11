@@ -161,7 +161,7 @@ namespace UserService
                     var newUser = new User(regDto)
                     {
                         Password = HashPassword(regDto.Password),
-                        Image = string.IsNullOrEmpty(regDto.Image) ? "" : UploadUserImage(regDto.Image)
+                        Image = UploadUserImage(regDto.Image)
                     };
 
                     try
@@ -184,14 +184,30 @@ namespace UserService
 
         private string UploadUserImage(string base64Image)
         {
-            using (var ms = new MemoryStream(Convert.FromBase64String(base64Image.Split(',')[1])))
+            try
             {
-                using (var image = Image.FromStream(ms))
+                // Ensure the Base64 string is properly formatted
+                var imageData = base64Image.Contains(",") ? base64Image.Split(',')[1] : base64Image;
+
+                // Convert Base64 string to byte array
+                using (var ms = new MemoryStream(Convert.FromBase64String(imageData)))
                 {
-                    return new Blob().UploadImage(new Bitmap(image), Guid.NewGuid().ToString() + ".jpg");
+                    // Create an image from the byte array
+                    using (var image = Image.FromStream(ms))
+                    {
+                        // Upload the image to blob storage and return the URL or path
+                        return new Blob().UploadImage(new Bitmap(image), Guid.NewGuid().ToString() + ".jpg");
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception and return a default or empty string
+                // Log.Error("Error uploading image", ex);
+                return string.Empty;
+            }
         }
+
 
         public async Task<UserDto> GetCurrentUserAsync(string email)
         {

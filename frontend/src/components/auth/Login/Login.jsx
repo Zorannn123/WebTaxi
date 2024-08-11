@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../../../services/userService'; // Adjust the path to where your service is located
+import { login } from '../../../services/userService';
 
 export const Login = () => {
     const [email, setEmail] = useState('');
@@ -21,8 +21,7 @@ export const Login = () => {
             console.log(email);
             console.log(password);
             window.alert('Login successful!');
-            // You can store the token or any other response data here if needed
-            // localStorage.setItem('token', data.token);
+
             navigate('/');
         } catch (error) {
             setErrorMessage('Login failed. Please check your credentials.');
