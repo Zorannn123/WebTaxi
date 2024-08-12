@@ -235,6 +235,22 @@ namespace UserService
             }
         }
 
+        public async Task<string> GetUserType(string email)
+        {
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currUser = await usersDictionary.TryGetValueAsync(transaction, email);
+                if (currUser.HasValue)
+                {
+                    
+                    return currUser.Value.UserType.ToString();
+                }
+                return null;
+            }
+        }
+
+
+
         public async Task<bool> EditProfileAsync(UserDto userDto)
         {
             bool temp = false;

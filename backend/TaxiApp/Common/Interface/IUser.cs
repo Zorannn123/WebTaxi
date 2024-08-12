@@ -14,5 +14,6 @@ namespace Common.Interface
         Task<bool> RegisterAsync(RegisterDto registerDto);
         Task<UserDto> GetCurrentUserAsync(string email);
         Task<bool> EditProfileAsync(UserDto userDto);
+        Task<string> GetUserType(string email);
     }
 }

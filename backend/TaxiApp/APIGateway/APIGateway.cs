@@ -10,7 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.ServiceFabric.Data;
+using System.Text;
 
 namespace APIGateway
 {
@@ -37,6 +40,26 @@ namespace APIGateway
                         ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
 
                         var builder = WebApplication.CreateBuilder();
+
+
+                        //JWT
+                        var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
+                        var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
+
+                        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                         .AddJwtBearer(options =>
+                         {
+                             options.TokenValidationParameters = new TokenValidationParameters
+                             {
+                                 ValidateIssuer = true,
+                                 ValidateAudience = true,
+                                 ValidateLifetime = true,
+                                 ValidateIssuerSigningKey = true,
+                                 ValidIssuer = jwtIssuer,
+                                 ValidAudience = jwtIssuer,
+                                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                             };
+                         });
 
                          builder.Services.AddCors(options =>
                         {
@@ -67,6 +90,7 @@ namespace APIGateway
                         app.UseSwaggerUI();
                         }
                         app.UseCors("AllowReactApp");
+                        app.UseAuthentication();
                         app.UseAuthorization();
                         app.MapControllers();
 

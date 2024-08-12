@@ -3,50 +3,21 @@ using Common.DTO;
 using Common.Interface;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
 using Microsoft.ServiceFabric.Services.Client;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APIGateway.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("user")]
     public class UserController : ControllerBase
     {
         [HttpPost]
-        [Route("login")]
-        public async Task<IActionResult> Login(LoginDto loginData)
-        {
-            try
-            {
-                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
-                var data = await proxy.LoginAsync(loginData);
-
-                return Ok(data);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost]
-        [Route("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody]RegisterDto registerData)
-        {
-            try
-            {
-                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
-                var temp = await proxy.RegisterAsync(registerData);
-
-                return Ok(temp);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost]
         [Route("editProfile")]
-        public async Task<IActionResult> EditProfileAsync(UserDto userData)
+        public async Task<IActionResult> EditProfileAsync([FromBody]UserDto userData)
         {
             try
             {
@@ -76,6 +47,31 @@ namespace APIGateway.Controllers
                 var message = ex.Message;
                 return BadRequest(message);
             }
+        }
+
+        [HttpGet]
+        [Route("userType")]
+        public async Task<IActionResult> GetUserTypeAsync(string email)
+        {
+            try
+            {
+                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
+                var temp = await proxy.GetUserType(email);
+
+                return Ok(temp);
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                return BadRequest(message);
+            }
+        }
+
+        [HttpGet]
+        [Route("protected")]
+        public IActionResult ProtectedEndpoint()
+        {
+            return Ok("You have access to this protected endpoint!");
         }
     }
 }

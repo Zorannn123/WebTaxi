@@ -18,7 +18,8 @@ export const Login = () => {
 
         try {
             const data = await login(email, password);
-            console.log(email);
+
+            console.log(data);
             console.log(password);
             window.alert('Login successful!');
 
