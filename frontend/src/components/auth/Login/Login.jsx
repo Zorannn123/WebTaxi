@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../../services/userService';
 
-export const Login = () => {
+export const Login = ({ logState }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -17,13 +17,18 @@ export const Login = () => {
         }
 
         try {
+            localStorage.clear();
             const data = await login(email, password);
 
-            console.log(data);
-            console.log(password);
-            window.alert('Login successful!');
-
-            navigate('/');
+            if (data) {
+                localStorage.setItem('testToken', data);
+                logState();
+                navigate('/');
+                window.alert('Login successful!');
+            } else {
+                console.error("Token not found in the response");
+                setErrorMessage("Token not found in the response");
+            }
         } catch (error) {
             setErrorMessage('Login failed. Please check your credentials.');
             console.error('Login error:', error);

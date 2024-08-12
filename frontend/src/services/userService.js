@@ -28,9 +28,11 @@ export const registerUser = async (userData) => {
 };
 
 // Fetch user profile
-export const getUserProfile = async () => {
+export const getUserProfile = async (email) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/user/profile`);
+        const response = await axios.get(`${API_BASE_URL}/user/profile`, {
+            email
+        });
         return response.data;
     } catch (error) {
         throw error;
