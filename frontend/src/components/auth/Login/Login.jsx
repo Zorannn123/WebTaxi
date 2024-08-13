@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../../services/userService';
 
-export const Login = ({ logState }) => {
+export const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -21,8 +21,7 @@ export const Login = ({ logState }) => {
             const data = await login(email, password);
 
             if (data) {
-                localStorage.setItem('testToken', data);
-                logState();
+                localStorage.setItem('authToken', data);
                 navigate('/');
                 window.alert('Login successful!');
             } else {

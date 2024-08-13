@@ -8,12 +8,7 @@ namespace Common.Blob
     public class Blob
     {
         private const string connectionString = "UseDevelopmentStorage=true";
-        private const string containerName = "taxi-blob-container";
-
-        // blobname - guid + ".jpg"
-
-        // Vraća URL koji se čuva u User.PhotoUrl
-        // Postavi container na public
+        public const string containerName = "taxi-blob-container";
         public string UploadImage(Bitmap image, string blobName)
         {
             try

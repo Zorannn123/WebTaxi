@@ -61,16 +61,10 @@ namespace APIGateway
                              };
                          });
 
-                         builder.Services.AddCors(options =>
-                        {
-                            options.AddPolicy("AllowReactApp",
-                                builder =>
-                                {
-                                    builder.WithOrigins("http://localhost:8003") // URL of your React app
-                                           .AllowAnyHeader()
-                                           .AllowAnyMethod();
-                                });
-                        });
+                         builder.Services.AddCors(policyBuilder =>
+                            policyBuilder.AddDefaultPolicy(policy =>
+                                policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod())
+                        );
 
 
 
@@ -84,6 +78,8 @@ namespace APIGateway
                         builder.Services.AddEndpointsApiExplorer();
                         builder.Services.AddSwaggerGen();
                         var app = builder.Build();
+
+                        app.UseCors();
                         if (app.Environment.IsDevelopment())
                         {
                         app.UseSwagger();

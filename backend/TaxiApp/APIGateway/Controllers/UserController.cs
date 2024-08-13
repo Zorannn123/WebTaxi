@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace APIGateway.Controllers
 {
@@ -33,14 +34,28 @@ namespace APIGateway.Controllers
 
         [HttpGet]
         [Route("currentProfile")]
-        public async Task<IActionResult> GetProfileAsync(string email)
+        public async Task<IActionResult> GetProfileAsync()
         {
             try
             {
-                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
-                var temp = await proxy.GetCurrentUserAsync(email);
+                var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
-                return Ok(temp);
+                if (string.IsNullOrEmpty(email))
+                {
+                    return Unauthorized("Invalid token, email claim not found.");
+                }
+
+                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
+                var userProfile = await proxy.GetCurrentUserAsync(email);
+
+                if (userProfile != null)
+                {
+                    return Ok(userProfile);
+                }
+                else
+                {
+                    return NotFound("User profile not found.");
+                }
             }
             catch (Exception ex)
             {
