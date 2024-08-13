@@ -120,8 +120,33 @@ namespace UserService
                 return Convert.ToBase64String(hashedPasswordWithSalt);
             }
         }
+        private string UploadUserImage(string base64Image)
+        {
+            try
+            {
+                // Ensure the Base64 string is properly formatted
+                var imageData = base64Image.Contains(",") ? base64Image.Split(',')[1] : base64Image;
 
+                // Convert Base64 string to byte array
+                using (var ms = new MemoryStream(Convert.FromBase64String(imageData)))
+                {
+                    // Create an image from the byte array
+                    using (var image = Image.FromStream(ms))
+                    {
+                        // Upload the image to blob storage and return the URL or path
+                        return new Blob().UploadImage(new Bitmap(image), Guid.NewGuid().ToString() + ".jpg");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and return a default or empty string
+                // Log.Error("Error uploading image", ex);
+                return string.Empty;
+            }
+        }
 
+        #region USER METHODS
         public async Task<bool> LoginAsync(LoginDto logDto)
         {
             if (logDto == null || string.IsNullOrWhiteSpace(logDto.Email) || string.IsNullOrWhiteSpace(logDto.Password))
@@ -143,8 +168,6 @@ namespace UserService
                         }
                     }
                 }
-            
-
             return false; // Failed login
         }
 
@@ -181,33 +204,6 @@ namespace UserService
 
             return result;
         }
-
-        private string UploadUserImage(string base64Image)
-        {
-            try
-            {
-                // Ensure the Base64 string is properly formatted
-                var imageData = base64Image.Contains(",") ? base64Image.Split(',')[1] : base64Image;
-
-                // Convert Base64 string to byte array
-                using (var ms = new MemoryStream(Convert.FromBase64String(imageData)))
-                {
-                    // Create an image from the byte array
-                    using (var image = Image.FromStream(ms))
-                    {
-                        // Upload the image to blob storage and return the URL or path
-                        return new Blob().UploadImage(new Bitmap(image), Guid.NewGuid().ToString() + ".jpg");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log the exception and return a default or empty string
-                // Log.Error("Error uploading image", ex);
-                return string.Empty;
-            }
-        }
-
 
         public async Task<UserDto> GetCurrentUserAsync(string email)
         {
@@ -297,7 +293,6 @@ namespace UserService
                         newUserCredentials.Image = imageUrl;
                     }
 
-
                     try
                     {
                         await usersDictionary.TryUpdateAsync(transaction, userDto.Email, newUserCredentials, currUserCredentials);
@@ -308,15 +303,94 @@ namespace UserService
                         temp = false;
                         transaction.Abort();
                     }
-
                 }
                 else
                 {
                     temp = false;
                 }
-
             }
             return temp;
         }
+        #endregion
+
+        #region ADMINISTRATOR METHODS
+        //***ADMINISTRATOR METHODS***
+        public async Task<bool> ApproveVerificationAsync(string id)
+        {
+            bool temp = false;
+
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currUser = await usersDictionary.TryGetValueAsync(transaction, id);
+
+                if (!currUser.HasValue)
+                {
+                    temp = false;
+                }else if(currUser.Value.Verification != Verification.OnHold){
+                    temp = false;
+                }
+                else
+                {
+                    var user = currUser.Value;
+                    user.Verification = Verification.Approved;
+
+                    try
+                    {
+                        await usersDictionary.TryUpdateAsync(transaction, id, user, user);
+                        await transaction.CommitAsync();
+                        temp = true;
+                    }
+                    catch (Exception)
+                    {
+                        temp = false;
+                        transaction.Abort();
+                    }
+                }
+                //TODO:send email
+            }
+
+            return temp;
+        }
+
+        public async Task<bool> DenyVerificationAsync(string id)
+        {
+            bool temp = false;
+
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currUser = await usersDictionary.TryGetValueAsync(transaction, id);
+
+                if (!currUser.HasValue)
+                {
+                    temp = false;
+                }
+                else if (currUser.Value.Verification != Verification.OnHold)
+                {
+                    temp = false;
+                }
+                else
+                {
+                    var user = currUser.Value;
+                    user.Verification = Verification.Denied;
+
+                    try
+                    {
+                        await usersDictionary.TryUpdateAsync(transaction, id, user, user);
+                        await transaction.CommitAsync();
+                        temp = true;
+                    }
+                    catch (Exception)
+                    {
+                        temp = false;
+                        transaction.Abort();
+                    }
+                }
+                //TODO:send email
+            }
+
+            return temp;
+        }
+        #endregion
+
     }
 }

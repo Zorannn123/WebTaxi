@@ -31,6 +31,8 @@ namespace Common.Models
         public TypeOfUser UserType { get; set; }
         [DataMember]
         public string? Image { get; set; }
+        [DataMember]
+        public Verification Verification { get; set; }
 
         public User(UserEntity user)
         {
@@ -43,6 +45,7 @@ namespace Common.Models
             DateOfBirth = user.DateOfBirth;
             UserType = user.UserType;
             Image = user.Image;
+            Verification = user.Verification;
         }
 
         public User(RegisterDto user)
@@ -63,6 +66,7 @@ namespace Common.Models
                 UserType = TypeOfUser.User;
             }
             Image = user.Image;
+            Verification = (UserType == TypeOfUser.User) ? Verification.Approved : Verification.OnHold;
         }
 
     }

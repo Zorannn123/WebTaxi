@@ -15,5 +15,9 @@ namespace Common.Interface
         Task<UserDto> GetCurrentUserAsync(string email);
         Task<bool> EditProfileAsync(UserDto userDto);
         Task<string> GetUserType(string email);
+
+
+        Task<bool> ApproveVerificationAsync(string id);
+        Task<bool> DenyVerificationAsync(string id);
     }
 }
