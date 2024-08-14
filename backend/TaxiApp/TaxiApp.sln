@@ -5,11 +5,13 @@ VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "TaxiApp", "TaxiApp\TaxiApp.sfproj", "{95F2C30A-05CE-41F2-ABBD-841619C977DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIGateway", "APIGateway\APIGateway.csproj", "{24011B71-3CBF-4DC0-9D32-E3FECC34CDA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APIGateway", "APIGateway\APIGateway.csproj", "{24011B71-3CBF-4DC0-9D32-E3FECC34CDA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{E620718F-1C1A-4E22-8775-8A6921E419B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{E620718F-1C1A-4E22-8775-8A6921E419B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService", "UserService\UserService.csproj", "{7F8DE093-CE2C-45D1-B8FB-8F799827F4EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService", "UserService\UserService.csproj", "{7F8DE093-CE2C-45D1-B8FB-8F799827F4EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailService", "EmailService\EmailService.csproj", "{BDAE5A26-5DD2-4689-B281-7A7265B9B88B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,14 @@ Global
 		{7F8DE093-CE2C-45D1-B8FB-8F799827F4EE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7F8DE093-CE2C-45D1-B8FB-8F799827F4EE}.Release|x64.ActiveCfg = Release|Any CPU
 		{7F8DE093-CE2C-45D1-B8FB-8F799827F4EE}.Release|x64.Build.0 = Release|Any CPU
+		{BDAE5A26-5DD2-4689-B281-7A7265B9B88B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDAE5A26-5DD2-4689-B281-7A7265B9B88B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDAE5A26-5DD2-4689-B281-7A7265B9B88B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BDAE5A26-5DD2-4689-B281-7A7265B9B88B}.Debug|x64.Build.0 = Debug|Any CPU
+		{BDAE5A26-5DD2-4689-B281-7A7265B9B88B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDAE5A26-5DD2-4689-B281-7A7265B9B88B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDAE5A26-5DD2-4689-B281-7A7265B9B88B}.Release|x64.ActiveCfg = Release|Any CPU
+		{BDAE5A26-5DD2-4689-B281-7A7265B9B88B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

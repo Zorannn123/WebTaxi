@@ -17,8 +17,10 @@
     <PackageReference Include="Azure.Storage.Queues" Version="12.11.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.5.0" />
-    <PackageReference Include="Microsoft.ServiceFabric.AspNetCore.Kestrel" Version="7.1.2175" />
+    <PackageReference Include="Microsoft.ServiceFabric.AspNetCore.Kestrel" Version="7.1.2338" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="7.1.2338" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="7.1.2338" />
   </ItemGroup>
 
   <ItemGroup>

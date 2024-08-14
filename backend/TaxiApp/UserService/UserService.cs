@@ -23,6 +23,8 @@ using System.Fabric.Management.ServiceModel;
 using System.Fabric.Description;
 using System.Runtime.CompilerServices;
 using System.Transactions;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
+using Microsoft.ServiceFabric.Services.Client;
 
 namespace UserService
 {
@@ -47,7 +49,19 @@ namespace UserService
         {
             await SetTableAsync();
             usersDictionary = await StateManager.GetOrAddAsync<IReliableDictionary<string, User>>("UsersDictionary");
-            await FillUserDictionary();
+            var users = await GetUsersFromTableAsync();
+            using (var transaction = StateManager.CreateTransaction())
+            {
+               
+                foreach (var user in users)
+                {
+                    await usersDictionary.TryAddAsync(transaction, user.Email, user);
+                }
+                await transaction.CommitAsync();
+            }
+
+
+            //await FillUserDictionary();
             usersTableThread = new Thread(new ThreadStart(UsersTableThread));
             usersTableThread.Start();
         }
@@ -59,9 +73,23 @@ namespace UserService
             usersTable = tsClient.GetTableClient("User");
         }
 
+        private async Task<IEnumerable<User>> GetUsersFromTableAsync()
+        {
+            var users = new List<User>();
+
+            await foreach (var entity in usersTable.QueryAsync<UserEntity>(filter: x => true))
+            {
+                // Convert UserEntity to User
+                var user = new User(entity);
+                users.Add(user);
+            }
+
+            return users;
+        }
+
         private async Task FillUserDictionary()
         {
-            var items = usersTable.QueryAsync<UserEntity>(x => true).GetAsyncEnumerator();
+            var items = usersTable.QueryAsync<UserEntity>(filter: x => true).GetAsyncEnumerator();
 
             using (var transaction = StateManager.CreateTransaction())
             {
@@ -313,17 +341,56 @@ namespace UserService
             }
             return temp;
         }
-        #endregion
 
-        #region ADMINISTRATOR METHODS
-        //***ADMINISTRATOR METHODS***
-        public async Task<bool> ApproveVerificationAsync(string id)
+        public async Task<bool> IsVerifiedAsync(string email)
         {
             bool temp = false;
 
             using (var transaction = StateManager.CreateTransaction())
             {
-                var currUser = await usersDictionary.TryGetValueAsync(transaction, id);
+                var currUser = await usersDictionary.TryGetValueAsync(transaction, email);
+                if (currUser.HasValue)
+                {
+                    if(currUser.Value.Verification == Verification.Approved)
+                    {
+                        temp = true;
+                    }
+                    else
+                    {
+                        temp = false;
+                    }
+                }
+            }
+            return temp;
+        }
+
+        public async Task<bool> IsBlockedAsync(string email)
+        {
+            bool temp = false;
+
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currUser = await usersDictionary.TryGetValueAsync(transaction, email);
+                if (currUser.HasValue)
+                {
+                    temp = currUser.Value.IsBlocked;
+                }
+            }
+            return temp;
+        }
+
+
+        #endregion
+
+        #region ADMINISTRATOR METHODS
+        //***ADMINISTRATOR METHODS***
+        public async Task<bool> ApproveVerificationAsync(string email)
+        {
+            bool temp = false;
+
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currUser = await usersDictionary.TryGetValueAsync(transaction, email);
 
                 if (!currUser.HasValue)
                 {
@@ -338,7 +405,7 @@ namespace UserService
 
                     try
                     {
-                        await usersDictionary.TryUpdateAsync(transaction, id, user, user);
+                        await usersDictionary.TryUpdateAsync(transaction, email, user, user);
                         await transaction.CommitAsync();
                         temp = true;
                     }
@@ -348,19 +415,32 @@ namespace UserService
                         transaction.Abort();
                     }
                 }
-                //TODO:send email
+
+                if (temp)
+                {
+                    try
+                    {
+                        var serviceProxy = ServiceProxy.Create<IEmail>(new Uri("fabric:/TaxiApp/EmailService"));
+                        await serviceProxy.SendMailAsync(email, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle or log other exceptions
+                        Console.WriteLine($"Exception: {ex.Message}");
+                    }
+                }
             }
 
             return temp;
         }
 
-        public async Task<bool> DenyVerificationAsync(string id)
+        public async Task<bool> DenyVerificationAsync(string email)
         {
             bool temp = false;
 
             using (var transaction = StateManager.CreateTransaction())
             {
-                var currUser = await usersDictionary.TryGetValueAsync(transaction, id);
+                var currUser = await usersDictionary.TryGetValueAsync(transaction, email);
 
                 if (!currUser.HasValue)
                 {
@@ -377,7 +457,7 @@ namespace UserService
 
                     try
                     {
-                        await usersDictionary.TryUpdateAsync(transaction, id, user, user);
+                        await usersDictionary.TryUpdateAsync(transaction, email, user, user);
                         await transaction.CommitAsync();
                         temp = true;
                     }
@@ -387,7 +467,11 @@ namespace UserService
                         transaction.Abort();
                     }
                 }
-                //TODO:send email
+                if (temp)
+                {
+                    IEmail proxy = ServiceProxy.Create<IEmail>(new Uri("fabric:/TaxiApp/EmailService"));
+                    await proxy.SendMailAsync(email, true);
+                }
             }
 
             return temp;

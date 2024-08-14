@@ -31,7 +31,7 @@ namespace APIGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+         
         [HttpGet]
         [Route("currentProfile")]
         public async Task<IActionResult> GetProfileAsync()
@@ -83,10 +83,37 @@ namespace APIGateway.Controllers
         }
 
         [HttpGet]
-        [Route("protected")]
-        public IActionResult ProtectedEndpoint()
+        [Route("isVerified")]
+        public async Task<IActionResult> IsVerifiedAsync(string email)
         {
-            return Ok("You have access to this protected endpoint!");
+            try
+            {
+                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
+                var retVal = await proxy.IsVerifiedAsync(email);
+                return Ok(retVal);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpGet]
+        [Route("isBlocked")]
+        public async Task<IActionResult> IsBlockedAsync(string email)
+        {
+            try
+            {
+                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
+                var retVal = await proxy.IsBlockedAsync(email);
+                return Ok(retVal);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
     }
 }
