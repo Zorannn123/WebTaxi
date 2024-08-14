@@ -33,6 +33,8 @@ namespace Common.Models
         public string? Image { get; set; }
         [DataMember]
         public Verification Verification { get; set; }
+        [DataMember]
+        public bool IsBlocked { get; set; }
 
         public User(UserEntity user)
         {
@@ -46,6 +48,8 @@ namespace Common.Models
             UserType = user.UserType;
             Image = user.Image;
             Verification = user.Verification;
+            IsBlocked = user.IsBlocked;
+
         }
 
         public User(RegisterDto user)
@@ -67,7 +71,9 @@ namespace Common.Models
             }
             Image = user.Image;
             Verification = (UserType == TypeOfUser.User) ? Verification.Approved : Verification.OnHold;
+            IsBlocked = false;
         }
+
 
     }
 }

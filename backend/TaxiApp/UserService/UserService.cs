@@ -21,6 +21,8 @@ using System.Drawing;
 using Common.Enum;
 using System.Fabric.Management.ServiceModel;
 using System.Fabric.Description;
+using System.Runtime.CompilerServices;
+using System.Transactions;
 
 namespace UserService
 {
@@ -390,6 +392,71 @@ namespace UserService
 
             return temp;
         }
+
+        public async Task<IEnumerable<DriverDto>> GetDriversAsync()
+        {
+            var retDrivers = new List<DriverDto>();
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var enumm = (await usersDictionary.CreateEnumerableAsync(transaction)).GetAsyncEnumerator();
+
+
+                while(await enumm.MoveNextAsync(CancellationToken.None))
+                {
+                    var user = enumm.Current.Value;
+                    if(user.UserType == TypeOfUser.Driver)
+                    {
+                        retDrivers.Add(new DriverDto(user));
+                    }
+                }
+                await transaction.CommitAsync();
+            }
+            return retDrivers;
+        }
+
+        public async Task<bool> DriverBlockAsync(string id)
+        {
+            bool temp = false;
+
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currUser = await usersDictionary.TryGetValueAsync(transaction, id);
+
+                if (!currUser.HasValue)
+                {
+                    temp = false;
+                }
+                else
+                {
+                    if(currUser.Value.UserType != TypeOfUser.Driver || currUser.Value.IsBlocked == true)
+                    {
+                        temp = false;
+                    }
+                    else
+                    {
+                        var user = currUser.Value;
+                        user.IsBlocked = true;
+
+                        try
+                        {
+                            await usersDictionary.TryUpdateAsync(transaction, id, user, user);
+                            await transaction.CommitAsync();
+                            temp = true;
+                        }
+                        catch (Exception)
+                        {
+                            temp = false;
+                            transaction.Abort();
+                        }
+                    }
+                }
+                //TODO:send email
+            }
+
+            return temp;
+        }
+
+
         #endregion
 
     }

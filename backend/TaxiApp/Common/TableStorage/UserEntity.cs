@@ -22,6 +22,8 @@ namespace Common.TableStorage
         public TypeOfUser UserType { get; set; }
         public string? Image { get; set; }
         public Verification Verification { get; set; }
+        public bool IsBlocked { get; set; }
+
         public string? PartitionKey { get; set; } = "User";
         public string? RowKey { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
@@ -47,6 +49,7 @@ namespace Common.TableStorage
             UserType = user.UserType;
             Image = user.Image;
             Verification = user.Verification;
+            IsBlocked = user.IsBlocked;
         }
     }
 }
