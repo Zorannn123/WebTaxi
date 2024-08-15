@@ -35,6 +35,8 @@ namespace Common.Models
         public Verification Verification { get; set; }
         [DataMember]
         public bool IsBlocked { get; set; }
+        [DataMember]
+        public bool Busy { get; set; }
 
         public User(UserEntity user)
         {
@@ -49,6 +51,7 @@ namespace Common.Models
             Image = user.Image;
             Verification = user.Verification;
             IsBlocked = user.IsBlocked;
+            Busy = user.Busy;
 
         }
 
@@ -72,6 +75,7 @@ namespace Common.Models
             Image = user.Image;
             Verification = (UserType == TypeOfUser.User) ? Verification.Approved : Verification.OnHold;
             IsBlocked = false;
+            Busy = false;
         }
 
 

@@ -15,6 +15,8 @@ namespace Common.Interface
         Task<UserDto> GetCurrentUserAsync(string email);
         Task<bool> EditProfileAsync(UserDto userDto);
         Task<string> GetUserType(string email);
+        Task<bool> GetBusyAsync(string email);
+        Task<bool> ChangeBusyAsync(string email, bool temp);
 
         Task<bool> IsVerifiedAsync(string email);
         Task<bool> IsBlockedAsync(string email);

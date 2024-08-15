@@ -23,6 +23,7 @@ namespace Common.TableStorage
         public string? Image { get; set; }
         public Verification Verification { get; set; }
         public bool IsBlocked { get; set; }
+        public bool Busy { get; set; }
 
         public string? PartitionKey { get; set; } = "User";
         public string? RowKey { get; set; }
@@ -50,6 +51,7 @@ namespace Common.TableStorage
             Image = user.Image;
             Verification = user.Verification;
             IsBlocked = user.IsBlocked;
+            Busy = user.Busy;
         }
     }
 }

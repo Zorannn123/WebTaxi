@@ -61,7 +61,6 @@ namespace UserService
             }
 
 
-            //await FillUserDictionary();
             usersTableThread = new Thread(new ThreadStart(UsersTableThread));
             usersTableThread.Start();
         }
@@ -79,7 +78,6 @@ namespace UserService
 
             await foreach (var entity in usersTable.QueryAsync<UserEntity>(filter: x => true))
             {
-                // Convert UserEntity to User
                 var user = new User(entity);
                 users.Add(user);
             }
@@ -87,27 +85,6 @@ namespace UserService
             return users;
         }
 
-        private async Task FillUserDictionary()
-        {
-            var items = usersTable.QueryAsync<UserEntity>(filter: x => true).GetAsyncEnumerator();
-
-            using (var transaction = StateManager.CreateTransaction())
-            {
-                if (items.Current != null)
-                {
-                    while (await items.MoveNextAsync())
-                    {
-                        var user = new User(items.Current);
-                        await usersDictionary.TryAddAsync(transaction, user.Email, user);
-                    }
-                    await transaction.CommitAsync();
-                }
-                else
-                {
-                    transaction.Abort();
-                }
-            }
-        }
         private async void UsersTableThread()
         {
             while (true)
@@ -378,7 +355,51 @@ namespace UserService
             }
             return temp;
         }
-
+        public async Task<bool> GetBusyAsync(string email)
+        {
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currUser = await usersDictionary.TryGetValueAsync(transaction, email);
+                if (currUser.HasValue)
+                {
+                    return currUser.Value.Busy;
+                }
+                return false;
+            }
+        }
+        public async Task<bool> ChangeBusyAsync(string email, bool temp)
+        {
+            bool retVal = false;
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currUser = await usersDictionary.TryGetValueAsync(transaction, email);
+                if (!currUser.HasValue)
+                {
+                    retVal = true;
+                }
+                else if(currUser.Value.Verification != Verification.OnHold)
+                {
+                    retVal = false;
+                }
+                else
+                {
+                    var retUser = currUser.Value;
+                    retUser.Busy = temp;
+                    try
+                    {
+                        await usersDictionary.TryUpdateAsync(transaction, email, retUser, retUser);
+                        await transaction.CommitAsync();
+                        retVal = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        retVal = false;
+                        transaction.Abort();
+                    }
+                }
+            }
+            return retVal;
+        }
 
         #endregion
 

@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Common.Models;
 
 namespace APIGateway.Controllers
 {
@@ -66,10 +67,11 @@ namespace APIGateway.Controllers
 
         [HttpGet]
         [Route("userType")]
-        public async Task<IActionResult> GetUserTypeAsync(string email)
+        public async Task<IActionResult> GetUserTypeAsync()
         {
             try
             {
+                var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
                 IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
                 var temp = await proxy.GetUserType(email);
 
@@ -84,10 +86,11 @@ namespace APIGateway.Controllers
 
         [HttpGet]
         [Route("isVerified")]
-        public async Task<IActionResult> IsVerifiedAsync(string email)
+        public async Task<IActionResult> IsVerifiedAsync()
         {
             try
             {
+                var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
                 IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
                 var retVal = await proxy.IsVerifiedAsync(email);
                 return Ok(retVal);
@@ -101,10 +104,11 @@ namespace APIGateway.Controllers
 
         [HttpGet]
         [Route("isBlocked")]
-        public async Task<IActionResult> IsBlockedAsync(string email)
+        public async Task<IActionResult> IsBlockedAsync()
         {
             try
             {
+                var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
                 IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
                 var retVal = await proxy.IsBlockedAsync(email);
                 return Ok(retVal);
@@ -113,7 +117,23 @@ namespace APIGateway.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+        [HttpGet]
+        [Route("busyStatus")]
+        public async Task<IActionResult> GetBusy()
+        {
+            try
+            {
+                var userEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
+                var temp = await proxy.GetBusyAsync(userEmail);
 
+                return Ok(temp);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
