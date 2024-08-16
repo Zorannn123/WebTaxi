@@ -377,7 +377,7 @@ namespace UserService
                 {
                     retVal = true;
                 }
-                else if(currUser.Value.Verification != Verification.OnHold)
+                else if(currUser.Value.Verification != Verification.Approved)
                 {
                     retVal = false;
                 }

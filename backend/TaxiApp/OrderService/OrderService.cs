@@ -15,6 +15,7 @@ using Common.Interface;
 using Common.TableStorage;
 using System.Security.Principal;
 using Common.DTO;
+using Common.Enum;
 
 namespace OrderService
 {
@@ -93,7 +94,26 @@ namespace OrderService
             }
         }
 
-        public async Task<AssessedOrderDto?> CreateOrderRequestAsync(AssessedOrderDto data, string userId)
+        public async Task<OrderInfoDto?> GetInfoOfOrderAsync(string orderId)
+        {
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currOrder = await orderDictionary.TryGetValueAsync(transaction, orderId);
+
+                if (currOrder.HasValue)
+                {
+                    Order order = currOrder.Value;
+                    OrderInfoDto infoOfOrder = new OrderInfoDto(order);
+
+                    return infoOfOrder;
+                }
+
+                return null;
+            }
+        }
+
+        #region USER
+        public async Task<OrderEstimateDto?> CreateOrderRequestAsync(NewOrderDto data, string userId)
         {
             using (var transaction = StateManager.CreateTransaction())
             {
@@ -103,7 +123,7 @@ namespace OrderService
                 {
                     await orderDictionary.AddAsync(transaction, order.Id, order);
                     await transaction.CommitAsync();
-                    return new AssessedOrderDto(order);
+                    return new OrderEstimateDto(order);
                 }
                 catch (Exception)
                 {
@@ -114,5 +134,166 @@ namespace OrderService
 
             return null;
         }
+
+        public async Task<OrderEstimateDto?> GetEstimateOrderAsync(string id)
+        {
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currOrder = await orderDictionary.TryGetValueAsync(transaction, id);
+                if (currOrder.HasValue)
+                {
+                    OrderEstimateDto orderDto = new OrderEstimateDto(currOrder.Value);
+                    return orderDto;
+                }
+                return null;
+            }
+        }
+
+        public async Task<bool> ConfirmOrderReqAsync(string orderId, string userId)
+        {
+            bool temp = false;
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var orderRes = await orderDictionary.TryGetValueAsync(transaction, orderId);
+                if (orderRes.HasValue)
+                {
+                    var order = orderRes.Value;
+                    if (orderRes.Value.Status == OrderStatus.OnHold && order.UserId.Equals(userId))
+                    {
+                        orderRes.Value.Status = OrderStatus.ConfirmedByUser;
+                        try
+                        {
+                            await orderDictionary.TryUpdateAsync(transaction, orderId, order, order);
+                            await transaction.CommitAsync();
+                            temp = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            temp = false;
+                            transaction.Abort();
+                        }
+                    }
+                }
+            }
+            return temp;
+        }
+
+        public async Task<bool> DeleteOrderReqAsync(string orderId, string userId)
+        {
+            bool temp = false;
+
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var orderRes = await orderDictionary.TryGetValueAsync(transaction, orderId);
+
+                if (orderRes.HasValue)
+                {
+                    try
+                    {
+                        await orderDictionary.TryRemoveAsync(transaction, orderId);
+                        await orderTable.DeleteEntityAsync("Order", orderId);
+                        await transaction.CommitAsync();
+                        temp = true;
+                    }
+                    catch (Exception)
+                    {
+                        temp = false;
+                        transaction.Abort();
+                    }
+                }
+            }
+            return temp;
+        }
+
+        public async Task<IEnumerable<OrderInfoDto>> GetPreviousOrdersOfUserAsync(string email)
+        {
+            List<OrderInfoDto> orders = new List<OrderInfoDto>();
+
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var enums = (await orderDictionary.CreateEnumerableAsync(transaction)).GetAsyncEnumerator();
+                while(await enums.MoveNextAsync(CancellationToken.None))
+                {
+                    var temp = enums.Current.Value;
+                    if(temp.Status == OrderStatus.Finished && temp.UserId.Equals(email))
+                    {
+                        orders.Add(new OrderInfoDto(temp));
+                    }
+                }
+            }
+            return orders;
+        }
+        #endregion
+        #region DRIVER
+
+        public async Task<bool> AcceptOrderAsync(string orderId, string email)
+        {
+            bool temp = false;
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currOrder = await orderDictionary.TryGetValueAsync(transaction, orderId);
+
+                if (currOrder.HasValue)
+                {
+                    var order = currOrder.Value;
+
+                    if (currOrder.Value.Status == OrderStatus.ConfirmedByUser)
+                    {
+                        currOrder.Value.Status = OrderStatus.InProgressed;
+                        currOrder.Value.DriverId = email;
+                        currOrder.Value.StartingTime = DateTime.UtcNow;
+
+                        try
+                        {
+                            await orderDictionary.TryUpdateAsync(transaction, orderId, order, order);
+                            await transaction.CommitAsync();
+                            temp = true;
+                        }
+                        catch (Exception)
+                        {
+                            temp = false;
+                            transaction.Abort();
+                        }
+                    }
+                }
+                return temp;
+            }
+        }
+
+        public async Task<bool> FinishOrderAsync(string orderId, string driverId)
+        {
+            bool temp = false;
+
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currOrder = await orderDictionary.TryGetValueAsync(transaction, orderId);
+
+                if (currOrder.HasValue)
+                {
+                    var order = currOrder.Value;
+
+                    if (currOrder.Value.Status == OrderStatus.InProgressed && order.DriverId.Equals(driverId))
+                    {
+                        var completedRide = order;
+                        completedRide.Status = OrderStatus.Finished;
+
+                        try
+                        {
+                            await orderDictionary.TryUpdateAsync(transaction, orderId, completedRide, order);
+                            await transaction.CommitAsync();
+                            temp = true;
+                        }
+                        catch (Exception)
+                        {
+                            temp = false;
+                            transaction.Abort();
+                        }
+                    }
+                }
+            }
+
+            return temp;
+        }
+        #endregion
     }
 }

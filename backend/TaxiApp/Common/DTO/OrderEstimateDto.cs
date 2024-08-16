@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Common.DTO
 {
     [DataContract]
-    public class AssessedOrderDto
+    public class OrderEstimateDto
     {
         [DataMember]
         public string? Id { get; set; }
@@ -26,7 +26,7 @@ namespace Common.DTO
         [DataMember]
         public string? UserId { get; set; }
 
-        public AssessedOrderDto(Order order)
+        public OrderEstimateDto(Order order)
         {
             Id = order.Id;
             StartAddress = order.StartAddress;

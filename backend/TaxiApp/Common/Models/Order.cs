@@ -26,7 +26,7 @@ namespace Common.Models
         [DataMember]
         public int ScheduledPickup { get; set; }     
         [DataMember]
-        public int RideDuration { get; set; }      
+        public int Duration { get; set; }      
         [DataMember]
         public DateTime StartingTime { get; set; }
         [DataMember]
@@ -44,7 +44,7 @@ namespace Common.Models
             Distance = order.Distance;
             Price = order.Price;
             ScheduledPickup = order.ScheduledPickup;
-            RideDuration = order.RideDuration;
+            Duration = order.Duration;
             StartingTime = order.StartingTime;
             Status = order.Status;
             UserId = order.UserId;
@@ -57,14 +57,14 @@ namespace Common.Models
 
             Id = Guid.NewGuid().ToString();
             StartAddress = startAddress;
-            ArriveAddress = ArriveAddress;
+            ArriveAddress = arriveAddress;
             Distance = rand.Next(1, 5);
             Price = rand.Next(190, 700);
             ScheduledPickup = rand.Next(3, 11);
-            RideDuration = rand.Next(2, 10);
+            Duration = rand.Next(2, 10);
             StartingTime = DateTime.UtcNow.AddMinutes(ScheduledPickup); 
             Status = OrderStatus.OnHold;
-            UserId = UserId;
+            UserId = userId;
             DriverId = null;
         }
     }
