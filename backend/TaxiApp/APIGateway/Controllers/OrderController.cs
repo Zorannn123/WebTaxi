@@ -1,6 +1,7 @@
 ﻿using Common.DTO;
 using Common.Interface;
 using Common.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ServiceFabric.Services.Client;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
@@ -13,6 +14,7 @@ namespace APIGateway.Controllers
     [Route("order")]
     public class OrderController : ControllerBase
     {
+        [Authorize(Roles = "User")]
         [HttpPost]
         [Route("createNew")]
         public async Task<IActionResult> CreateNewOrder(NewOrderDto order)
@@ -80,8 +82,7 @@ namespace APIGateway.Controllers
             }
             catch (Exception ex)
             {
-                var message = ex.Message;
-                return BadRequest(message);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -108,8 +109,7 @@ namespace APIGateway.Controllers
             }
             catch (Exception ex)
             {
-                var message = ex.Message;
-                return BadRequest(message);
+                return BadRequest(ex.Message);
             }
         }
         [HttpGet]
@@ -158,8 +158,59 @@ namespace APIGateway.Controllers
             }
             catch (Exception ex)
             {
-                var message = ex.Message;
-                return BadRequest(message);
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet]
+        [Route("onHoldOrders")]
+        public async Task<IActionResult> GetAllOnHold()
+        {
+            try
+            {
+                var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
+                IUser userProxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
+                var isBusy = await userProxy.GetBusyAsync(email);
+
+                if (isBusy)
+                {
+                    return Unauthorized();
+                }
+
+                IOrder proxy = ServiceProxy.Create<IOrder>(new Uri("fabric:/TaxiApp/OrderService"), new ServicePartitionKey(1));
+                var orders = await proxy.GetAllOnHoldOrdersAsync();
+
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("allPreviousOrders")]
+        public async Task<IActionResult> GetAllPreviousOrders()
+        {
+            try
+            {
+                var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
+                IUser userProxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
+                var isVerified = await userProxy.IsVerifiedAsync(email);
+
+                if (!isVerified)
+                {
+                    return Unauthorized();
+                }
+                IOrder proxy = ServiceProxy.Create<IOrder>(new Uri("fabric:/TaxiApp/OrderService"), new ServicePartitionKey(1));
+                var orders = await proxy.GetPreviousOrderForDriverAsync(email);
+
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
@@ -194,8 +245,24 @@ namespace APIGateway.Controllers
             }
             catch (Exception ex)
             {
-                var message = ex.Message;
-                return BadRequest(message);
+                return BadRequest(ex.Message);
+            }
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        [Route("allOrders")]
+        public async Task<IActionResult> GetAllOrders()
+        {
+            try
+            {
+                IOrder proxy = ServiceProxy.Create<IOrder>(new Uri("fabric:/TaxiApp/OrderService"), new ServicePartitionKey(1));
+                var orders = await proxy.GetAllOrdersAsync();
+
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 

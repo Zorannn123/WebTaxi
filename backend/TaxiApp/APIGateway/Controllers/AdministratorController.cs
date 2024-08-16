@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace APIGateway.Controllers
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("administrator")]
     public class AdministratorController : ControllerBase

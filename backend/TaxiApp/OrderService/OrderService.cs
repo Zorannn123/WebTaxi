@@ -294,6 +294,69 @@ namespace OrderService
 
             return temp;
         }
+
+
+        public async Task<IEnumerable<OrderInfoDto>> GetPreviousOrderForDriverAsync(string driverId)
+        {
+            List<OrderInfoDto> orders = new List<OrderInfoDto>();
+
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var enums = (await orderDictionary.CreateEnumerableAsync(transaction)).GetAsyncEnumerator();
+
+                while (await enums.MoveNextAsync(CancellationToken.None))
+                {
+                    var currOrder = enums.Current.Value;
+                    if (currOrder.Status == OrderStatus.Finished && currOrder.DriverId.Equals(driverId))
+                    {
+                        orders.Add(new OrderInfoDto(currOrder));
+                    }
+                }
+            }
+
+            return orders;
+        }
+
+        public async Task<IEnumerable<OrderInfoDto>> GetAllOnHoldOrdersAsync()
+        {
+            List<OrderInfoDto> orders = new List<OrderInfoDto>();
+
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var enums = (await orderDictionary.CreateEnumerableAsync(transaction)).GetAsyncEnumerator();
+
+                while (await enums.MoveNextAsync(CancellationToken.None))
+                {
+                    var currOrder = enums.Current.Value;
+                    if (currOrder.Status == OrderStatus.ConfirmedByUser)
+                    {
+                        orders.Add(new OrderInfoDto(currOrder));
+                    }
+                }
+            }
+            return orders;
+        }
+
+        #endregion
+        #region ADMIN
+        public async Task<IEnumerable<OrderInfoDto>> GetAllOrdersAsync()
+        {
+            List<OrderInfoDto> orders = new List<OrderInfoDto>();
+
+            using (var tx = StateManager.CreateTransaction())
+            {
+                var enums = (await orderDictionary.CreateEnumerableAsync(tx)).GetAsyncEnumerator();
+
+                while (await enums.MoveNextAsync(CancellationToken.None))
+                {
+                    var temp = enums.Current.Value;
+                    var order = new OrderInfoDto(temp);
+                    orders.Add(order);
+                }
+            }
+
+            return orders;
+        }
         #endregion
     }
 }

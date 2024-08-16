@@ -20,5 +20,8 @@ namespace Common.Interface
         Task<bool> AcceptOrderAsync(string orderId, string email);
         Task<OrderInfoDto?> GetInfoOfOrderAsync(string orderId);
         Task<bool> FinishOrderAsync(string orderId, string driverId);
+        Task<IEnumerable<OrderInfoDto>> GetPreviousOrderForDriverAsync(string driverId);
+        Task<IEnumerable<OrderInfoDto>> GetAllOnHoldOrdersAsync();
+        Task<IEnumerable<OrderInfoDto>> GetAllOrdersAsync(); //samo admin
     }
 }
