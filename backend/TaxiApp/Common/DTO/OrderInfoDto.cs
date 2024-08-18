@@ -29,7 +29,7 @@ namespace Common.DTO
         [DataMember]
         public DateTime StartingTime { get; set; }
         [DataMember]
-        public OrderStatus Status { get; set; }    
+        public string Status { get; set; }    
         [DataMember]
         public string? UserId { get; set; }
         [DataMember]
@@ -45,7 +45,7 @@ namespace Common.DTO
             ScheduledPickup = order.ScheduledPickup;
             Duration = order.Duration;
             StartingTime = order.StartingTime;
-            Status = order.Status;
+            Status = order.Status.ToString();
             UserId = order.UserId;
             DriverId = order.DriverId;
         }

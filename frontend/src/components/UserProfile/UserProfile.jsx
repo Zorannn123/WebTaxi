@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getUserProfile, updateUserProfile } from "../../services/userService";
+import { getUserProfile } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
 
 export const UserProfile = () => {
@@ -41,6 +41,9 @@ export const UserProfile = () => {
     const handleEditClick = () => {
         navigate("/editProfile");
     }
+    const HandleBack = () => {
+        navigate("/");
+    }
 
     return (
         <div>
@@ -62,6 +65,7 @@ export const UserProfile = () => {
                         handleEditClick();
                     }}>Edit Profile</button>
                     {errorMessage && <p style={{ color: 'red', textAlign: 'center', marginBottom: 20 }} > {errorMessage}</p>}
+                    <button onClick={HandleBack}>Back</button>
                 </div>
             </div>
         </div>

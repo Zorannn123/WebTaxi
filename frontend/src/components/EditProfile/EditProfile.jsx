@@ -82,6 +82,7 @@ export const EditProfile = () => {
             if (result) {
                 setSuccessMessage('Profile updated successfully!');
                 setErrorMessage('');
+                window.alert("Profile updated successfully!");
                 navigate('/yourProfile');
             } else {
                 setErrorMessage('Profile update failed.');
@@ -91,6 +92,10 @@ export const EditProfile = () => {
             console.error('Profile update error:', error);
         }
     };
+    const HandleBack = () => {
+        navigate("/yourProfile");
+    }
+
 
     return (
         <div>
@@ -137,6 +142,7 @@ export const EditProfile = () => {
                 {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
                 <button type="submit">Update Profile</button>
             </form>
+            <button onClick={HandleBack}>Back</button>
         </div>
     );
 };

@@ -256,8 +256,8 @@ namespace OrderService
                         }
                     }
                 }
-                return temp;
             }
+            return temp;
         }
 
         public async Task<bool> FinishOrderAsync(string orderId, string driverId)

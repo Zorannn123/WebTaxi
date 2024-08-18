@@ -25,6 +25,8 @@ namespace Common.DTO
         public int ScheduledPickup { get; set; }
         [DataMember]
         public string? UserId { get; set; }
+        [DataMember]
+        public int Duration { get; set; }
 
         public OrderEstimateDto(Order order)
         {
@@ -35,6 +37,7 @@ namespace Common.DTO
             Price = order.Price;
             ScheduledPickup = order.ScheduledPickup;
             UserId = order.UserId;
+            Duration = order.Duration;
         }
     }
 }

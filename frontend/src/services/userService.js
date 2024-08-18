@@ -41,4 +41,25 @@ export const updateUserProfile = async (userData) => {
     }
 };
 
+export const createNewRide = async (startAddress, ArriveAddress) => {
+    try {
+        const response = await apiClient.post('/order/createNew', {
+            startAddress,
+            ArriveAddress
+        })
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getPreviousOrdersUser = async () => {
+    try {
+        const response = await apiClient.get('order/previousOrders')
+        return response.data
+    } catch (error) {
+        throw error;
+    }
+}
+
 

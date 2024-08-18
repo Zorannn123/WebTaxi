@@ -14,7 +14,7 @@ namespace APIGateway.Controllers
     [Route("order")]
     public class OrderController : ControllerBase
     {
-        [Authorize(Roles = "User")]
+        //[Authorize(Roles = "User")]
         [HttpPost]
         [Route("createNew")]
         public async Task<IActionResult> CreateNewOrder(NewOrderDto order)
@@ -44,12 +44,12 @@ namespace APIGateway.Controllers
 
         [HttpGet]
         [Route("estimateOrder")]
-        public async Task<IActionResult> GetEstimateOrder(string id) 
+        public async Task<IActionResult> GetEstimateOrder(string orderId) 
         {
             try
             {
                 IOrder proxy = ServiceProxy.Create<IOrder>(new Uri("fabric:/TaxiApp/OrderService"), new ServicePartitionKey(1));
-                var newOrder = await proxy.GetEstimateOrderAsync(id);
+                var newOrder = await proxy.GetEstimateOrderAsync(orderId);
 
                 return Ok(newOrder);
             }
@@ -60,7 +60,7 @@ namespace APIGateway.Controllers
         }
         [HttpPost]
         [Route("confirmOrder")]
-        public async Task<IActionResult> ConfirmOrder(string data)
+        public async Task<IActionResult> ConfirmOrder(string orderId)
         {
             try
             {
@@ -72,13 +72,20 @@ namespace APIGateway.Controllers
 
                 if (busy)
                 {
-                    return Unauthorized();
+                    return Unauthorized("User is currently busy and cannot confirm the order.");
                 }
 
                 IOrder proxy = ServiceProxy.Create<IOrder>(new Uri("fabric:/TaxiApp/OrderService"), new ServicePartitionKey(1));
-                var retData = await proxy.ConfirmOrderReqAsync(data, email);
+                var confirmationResult = await proxy.ConfirmOrderReqAsync(orderId, email);
 
-                return Ok(retData);
+                if (confirmationResult)
+                {
+                    return Ok("Order confirmed successfully.");
+                }
+                else
+                {
+                    return BadRequest("Failed to confirm the order.");
+                }
             }
             catch (Exception ex)
             {
@@ -88,7 +95,7 @@ namespace APIGateway.Controllers
 
         [HttpPost]
         [Route("deleteOrder")]
-        public async Task<IActionResult> DeleteOrder(string data)
+        public async Task<IActionResult> DeleteOrder(string orderId)
         {
             try
             {
@@ -103,7 +110,7 @@ namespace APIGateway.Controllers
                 }
 
                 IOrder proxy = ServiceProxy.Create<IOrder>(new Uri("fabric:/TaxiApp/OrderService"), new ServicePartitionKey(1));
-                var retData = await proxy.DeleteOrderReqAsync(data, email);
+                var retData = await proxy.DeleteOrderReqAsync(orderId, email);
 
                 return Ok(retData);
             }
