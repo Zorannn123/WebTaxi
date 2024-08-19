@@ -67,6 +67,8 @@ namespace Common.Models
             if (user.Role == TypeOfUser.Driver.ToString())
             {
                 UserType = TypeOfUser.Driver;
+            }else if (user.Role == TypeOfUser.Admin.ToString()){
+                UserType = TypeOfUser.Admin;
             }
             else
             {

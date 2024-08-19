@@ -16,6 +16,7 @@ using Common.TableStorage;
 using System.Security.Principal;
 using Common.DTO;
 using Common.Enum;
+using Microsoft.ServiceFabric.Services.Client;
 
 namespace OrderService
 {
@@ -53,6 +54,70 @@ namespace OrderService
             orderTableThread = new Thread(new ThreadStart(RideTableWriteThread));
             orderTableThread.Start();
         }
+
+        public async Task<bool> UpdateStatuses()
+        {
+            bool result = false;
+
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var ordersToUpdate = new List<string>();
+
+                // Retrieve all orders using an enumerator
+                var enumerator = (await orderDictionary.CreateEnumerableAsync(transaction)).GetAsyncEnumerator();
+                while (await enumerator.MoveNextAsync(CancellationToken.None))
+                {
+                    var orderId = enumerator.Current.Key;
+                    var order = enumerator.Current.Value;
+                    var now = DateTime.UtcNow;
+
+                    // Check if order is WaitingForPickup and update to InProgress if 5 seconds have passed
+                    if (order.Status == OrderStatus.WaitingForPickup &&
+                        (now - order.StartingTime).TotalSeconds >= order.ScheduledPickup)
+                    {
+                        order.Status = OrderStatus.InProgress;
+                        ordersToUpdate.Add(orderId);
+                    }
+
+                    // Check if order is InProgress and update to Finished if 15 seconds have passed
+                    if (order.Status == OrderStatus.InProgress &&
+                        (now - order.StartingTime).TotalSeconds >= order.Distance + order.ScheduledPickup)
+                    {
+                        order.Status = OrderStatus.Finished;
+                        ordersToUpdate.Add(orderId);
+
+
+                        IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
+                        await proxy.ChangeBusyAsync(order.DriverId, false);
+                        await proxy.ChangeBusyAsync(order.UserId, false);
+                    }
+                }
+
+                // Apply updates in a single transaction
+                foreach (var orderId in ordersToUpdate)
+                {
+                    var order = await orderDictionary.TryGetValueAsync(transaction, orderId);
+                    if (order.HasValue)
+                    {
+                        await orderDictionary.TryUpdateAsync(transaction, orderId, order.Value, order.Value);
+                    }
+                }
+
+                try
+                {
+                    await transaction.CommitAsync();
+                    result = true;
+                }
+                catch (Exception)
+                {
+                    transaction.Abort();
+                    result = false;
+                }
+            }
+
+            return result;
+        }
+
 
         private async Task SetRideTableAsync()
         {
@@ -143,6 +208,7 @@ namespace OrderService
                 if (currOrder.HasValue)
                 {
                     OrderEstimateDto orderDto = new OrderEstimateDto(currOrder.Value);
+
                     return orderDto;
                 }
                 return null;
@@ -239,7 +305,7 @@ namespace OrderService
 
                     if (currOrder.Value.Status == OrderStatus.ConfirmedByUser)
                     {
-                        currOrder.Value.Status = OrderStatus.InProgressed;
+                        currOrder.Value.Status = OrderStatus.WaitingForPickup;
                         currOrder.Value.DriverId = email;
                         currOrder.Value.StartingTime = DateTime.UtcNow;
 
@@ -272,7 +338,7 @@ namespace OrderService
                 {
                     var order = currOrder.Value;
 
-                    if (currOrder.Value.Status == OrderStatus.InProgressed && order.DriverId.Equals(driverId))
+                    if (currOrder.Value.Status == OrderStatus.InProgress && order.DriverId.Equals(driverId))
                     {
                         var completedRide = order;
                         completedRide.Status = OrderStatus.Finished;

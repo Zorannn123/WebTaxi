@@ -14,7 +14,7 @@ namespace APIGateway.Controllers
     [Route("order")]
     public class OrderController : ControllerBase
     {
-        //[Authorize(Roles = "User")]
+        [Authorize(Roles = "User")]
         [HttpPost]
         [Route("createNew")]
         public async Task<IActionResult> CreateNewOrder(NewOrderDto order)
@@ -41,7 +41,7 @@ namespace APIGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize(Roles = "User")]
         [HttpGet]
         [Route("estimateOrder")]
         public async Task<IActionResult> GetEstimateOrder(string orderId) 
@@ -58,6 +58,7 @@ namespace APIGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "User")]
         [HttpPost]
         [Route("confirmOrder")]
         public async Task<IActionResult> ConfirmOrder(string orderId)
@@ -92,7 +93,7 @@ namespace APIGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize(Roles = "User")]
         [HttpPost]
         [Route("deleteOrder")]
         public async Task<IActionResult> DeleteOrder(string orderId)
@@ -119,6 +120,7 @@ namespace APIGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "User")]
         [HttpGet]
         [Route("previousOrders")]
         public async Task<IActionResult> GetPrevious()
@@ -134,6 +136,7 @@ namespace APIGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Driver")]
         [HttpPost]
         [Route("acceptOrder")]
         public async Task<IActionResult> AcceptOrder(string orderId)
@@ -168,6 +171,7 @@ namespace APIGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Driver")]
         [HttpGet]
         [Route("onHoldOrders")]
         public async Task<IActionResult> GetAllOnHold()
@@ -194,7 +198,7 @@ namespace APIGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize(Roles = "Driver")]
         [HttpGet]
         [Route("allPreviousOrders")]
         public async Task<IActionResult> GetAllPreviousOrders()
@@ -220,7 +224,7 @@ namespace APIGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize(Roles = "Driver")]
         [HttpPost]
         [Route("finishOrder")]
         public async Task<IActionResult> FinishOrder(string orderId)
@@ -272,7 +276,5 @@ namespace APIGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-
     }
 }

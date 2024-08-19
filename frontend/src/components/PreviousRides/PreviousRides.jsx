@@ -57,7 +57,10 @@ export const PreviousRides = () => {
                     <button onClick={HandleBack}>Back</button>
                 </>
             ) : (
-                <p>No previous rides available.</p>
+                <>
+                    <p>No previous rides available.</p>
+                    <button onClick={HandleBack}>Back</button>
+                </>
             )}
         </div>
     );

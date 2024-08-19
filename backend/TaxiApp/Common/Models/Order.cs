@@ -32,9 +32,9 @@ namespace Common.Models
         [DataMember]
         public OrderStatus Status { get; set; }    
         [DataMember]
-        public string? UserId { get; set; }
+        public string UserId { get; set; }
         [DataMember]
-        public string? DriverId { get; set; } = null;
+        public string DriverId { get; set; }
 
         public Order(OrderEntity order)
         {

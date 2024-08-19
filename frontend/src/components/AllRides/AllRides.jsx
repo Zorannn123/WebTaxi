@@ -1,58 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { getOnHoldOrders, acceptOrder } from "../../services/orderService";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { getAllOrders } from "../../services/orderService";
 
-export const NewRides = () => {
+export const AllRides = () => {
     const [orders, setOrders] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
-    const [busy, setBusy] = useState(false);
 
     useEffect(() => {
-        const fetchOnHoldOrders = async () => {
+        const fetchAllOrders = async () => {
             try {
-                const data = await getOnHoldOrders();
-                setOrders(data);
+                const data = await getAllOrders();
                 console.log(data);
+                setOrders(data);
             } catch (error) {
-                setErrorMessage('Failed to fetch on-hold orders.');
-                console.error('Error fetching on-hold orders: ', error);
+                setErrorMessage('Failed to fetch previous rides.');
+                console.error('Error fetching previous rides: ', error);
             }
         };
-        fetchOnHoldOrders();
+        fetchAllOrders();
     }, []);
-
-    const handleAccept = async (orderId) => {
-        try {
-            const result = await acceptOrder(orderId);
-            console.log(result)
-            if (result) {
-                setOrders(orders.filter(order => order.id !== orderId));
-                setBusy(true);
-                window.alert('You accept the order successfully!');
-            }
-        } catch (error) {
-            setErrorMessage('Failed to accept order.');
-            console.error('Error accepting order: ', error);
-        }
-    };
 
     const HandleBack = () => {
         navigate("/");
     }
 
-    if (busy) {
-        return (
-            <>
-                <p>You are busy with an order.</p>
-                <button onClick={HandleBack}>Back</button>
-            </>
-        )
-    }
-
     return (
         <div>
-            <h1>On-Hold Orders</h1>
+            <h1>All Rides</h1>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             {orders.length > 0 ? (
                 <>
@@ -64,8 +39,10 @@ export const NewRides = () => {
                                 <th>Distance</th>
                                 <th>Duration</th>
                                 <th>Price</th>
+                                <th>Date</th>
+                                <th>Driver</th>
                                 <th>User</th>
-                                <th>Actions</th>
+                                <th>Order State</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -76,10 +53,10 @@ export const NewRides = () => {
                                     <td>{order.distance}km</td>
                                     <td>{order.duration}min</td>
                                     <td>{order.price}din</td>
+                                    <td>{order.startingTime}</td>
+                                    <td>{order.driverId}</td>
                                     <td>{order.userId}</td>
-                                    <td>
-                                        <button onClick={() => handleAccept(order.id)}>Accept</button>
-                                    </td>
+                                    <td>{order.status}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -87,7 +64,7 @@ export const NewRides = () => {
                     <button onClick={HandleBack}>Back</button>
                 </>
             ) : (
-                <p>No on-hold orders available.</p>
+                <p>No previous rides available.</p>
             )}
         </div>
     );

@@ -10,7 +10,8 @@ namespace Common.Enum
     {
         OnHold,
         ConfirmedByUser,
-        InProgressed,
+        WaitingForPickup,
+        InProgress,
         Finished
     }
 }

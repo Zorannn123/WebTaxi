@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService", "UserService\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailService", "EmailService\EmailService.csproj", "{BDAE5A26-5DD2-4689-B281-7A7265B9B88B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService", "OrderService\OrderService.csproj", "{BC162683-13AF-48B5-AE69-32B499D83C28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService", "OrderService\OrderService.csproj", "{BC162683-13AF-48B5-AE69-32B499D83C28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatusUpdater", "StatusUpdater\StatusUpdater.csproj", "{6C6C2BCE-771F-4404-8CCB-138FB638E107}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,14 @@ Global
 		{BC162683-13AF-48B5-AE69-32B499D83C28}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BC162683-13AF-48B5-AE69-32B499D83C28}.Release|x64.ActiveCfg = Release|Any CPU
 		{BC162683-13AF-48B5-AE69-32B499D83C28}.Release|x64.Build.0 = Release|Any CPU
+		{6C6C2BCE-771F-4404-8CCB-138FB638E107}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C6C2BCE-771F-4404-8CCB-138FB638E107}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C6C2BCE-771F-4404-8CCB-138FB638E107}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6C6C2BCE-771F-4404-8CCB-138FB638E107}.Debug|x64.Build.0 = Debug|Any CPU
+		{6C6C2BCE-771F-4404-8CCB-138FB638E107}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C6C2BCE-771F-4404-8CCB-138FB638E107}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C6C2BCE-771F-4404-8CCB-138FB638E107}.Release|x64.ActiveCfg = Release|Any CPU
+		{6C6C2BCE-771F-4404-8CCB-138FB638E107}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

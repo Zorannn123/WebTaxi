@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createNewRide } from "../../../services/userService";
+import { createNewRide } from "../../services/userService";
 
 export const NewRide = () => {
     const [startAddress, setStartAddress] = useState('');

@@ -44,3 +44,21 @@ export const acceptOrder = async (id) => {
         throw error
     }
 };
+
+export const getPreviousOrdersDriver = async () => {
+    try {
+        const response = await apiClient.get('/order/allPreviousOrders')
+        return response.data;
+    } catch (error) {
+        throw error
+    }
+};
+
+export const getAllOrders = async () => {
+    try {
+        const response = await apiClient.get('order/allOrders')
+        return response.data
+    } catch (error) {
+        throw error
+    }
+};

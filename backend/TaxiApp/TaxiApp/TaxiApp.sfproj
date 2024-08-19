@@ -41,6 +41,7 @@
     </ProjectReference>
     <ProjectReference Include="..\EmailService\EmailService.csproj" />
     <ProjectReference Include="..\OrderService\OrderService.csproj" />
+    <ProjectReference Include="..\StatusUpdater\StatusUpdater.csproj" />
     <ProjectReference Include="..\UserService\UserService.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />

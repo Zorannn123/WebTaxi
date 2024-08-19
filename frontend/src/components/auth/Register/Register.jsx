@@ -52,10 +52,10 @@ export const Register = () => {
 
         try {
             const result = await registerUser(userData);
-            console.log(result);
             if (result) {
                 setSuccessMessage('Registration successful!');
                 setErrorMessage('');
+                window.alert('Registration successful!');
                 navigate('/login');
             } else {
                 setErrorMessage('Registration failed. Email might already be in use.');

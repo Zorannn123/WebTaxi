@@ -5,12 +5,16 @@ import { EditProfile } from './components/EditProfile/EditProfile';
 import { Dashboard } from './components/Dashboard/Dashboard';
 import { UserProfile } from './components/UserProfile/UserProfile';
 import { ProtectedRoute } from './components/utils/ProtectedRoute';
-import { NewRide } from './components/auth/NewRide/NewRide';
+import { NewRide } from './components/NewRide/NewRide';
 import { ConfirmOrder } from './components/ConfirmRide/ConfirmRide';
 import { NewRides } from './components/NewRidesDriver/NewRidesDriver';
 import React from 'react';
 import './App.css';
 import { PreviousRides } from './components/PreviousRides/PreviousRides';
+import { MyRides } from './components/MyRides/MyRides';
+import { AllRides } from './components/AllRides/AllRides';
+import { Logout } from './components/auth/Logout/Logout';
+import { Drivers } from './components/AllDrivers/AllDrivers';
 
 function App() {
   return (
@@ -26,6 +30,10 @@ function App() {
           <Route path="/confirmOrder/:id" element={<ConfirmOrder />} />
           <Route path="/newRides" element={<NewRides />} />
           <Route path="/previousRides" element={<PreviousRides />} />
+          <Route path="/myRides" element={<MyRides />} />
+          <Route path="/allRides" element={<AllRides />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/allDrivers" element={<Drivers />} />
         </Route>
       </Routes>
     </Router>

@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using Common.Models;
 using System.Threading.Tasks;
+using Common.Enum;
 
 namespace Common.DTO
 {
@@ -27,6 +28,10 @@ namespace Common.DTO
         public string? UserId { get; set; }
         [DataMember]
         public int Duration { get; set; }
+        [DataMember]
+        public string Status { get; set; }
+        [DataMember]
+        public DateTime StartingTime { get; set; }
 
         public OrderEstimateDto(Order order)
         {
@@ -38,6 +43,8 @@ namespace Common.DTO
             ScheduledPickup = order.ScheduledPickup;
             UserId = order.UserId;
             Duration = order.Duration;
+            Status = order.Status.ToString();
+            StartingTime = order.StartingTime;
         }
     }
 }

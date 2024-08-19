@@ -13,6 +13,8 @@ namespace Common.Interface
         Task<OrderEstimateDto?> CreateOrderRequestAsync(NewOrderDto data, string email);
         Task<OrderEstimateDto?> GetEstimateOrderAsync(string orderId);
         Task<bool> ConfirmOrderReqAsync(string orderId, string email);
+        Task<bool> UpdateStatuses();
+
         Task<bool> DeleteOrderReqAsync(string orderId, string email);
         Task<IEnumerable<OrderInfoDto>> GetPreviousOrdersOfUserAsync(string email);
 
