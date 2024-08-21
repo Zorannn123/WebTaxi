@@ -555,12 +555,51 @@ namespace UserService
                         }
                     }
                 }
-                //TODO:send email
             }
 
             return temp;
         }
 
+        public async Task<bool> DriverUnBlockAsync(string id)
+        {
+            bool temp = false;
+
+            using (var transaction = StateManager.CreateTransaction())
+            {
+                var currUser = await usersDictionary.TryGetValueAsync(transaction, id);
+
+                if (!currUser.HasValue)
+                {
+                    temp = false;
+                }
+                else
+                {
+                    if (currUser.Value.UserType != TypeOfUser.Driver || currUser.Value.IsBlocked == false)
+                    {
+                        temp = false;
+                    }
+                    else
+                    {
+                        var user = currUser.Value;
+                        user.IsBlocked = false;
+
+                        try
+                        {
+                            await usersDictionary.TryUpdateAsync(transaction, id, user, user);
+                            await transaction.CommitAsync();
+                            temp = true;
+                        }
+                        catch (Exception)
+                        {
+                            temp = false;
+                            transaction.Abort();
+                        }
+                    }
+                }
+            }
+
+            return temp;
+        }
 
         #endregion
 

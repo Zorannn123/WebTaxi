@@ -281,7 +281,7 @@ namespace OrderService
                 while(await enums.MoveNextAsync(CancellationToken.None))
                 {
                     var temp = enums.Current.Value;
-                    if(temp.Status == OrderStatus.Finished && temp.UserId.Equals(email))
+                    if(temp.Status == OrderStatus.Finished && temp.UserId != null && temp.UserId.Equals(email))
                     {
                         orders.Add(new OrderInfoDto(temp));
                     }
@@ -338,7 +338,7 @@ namespace OrderService
                 {
                     var order = currOrder.Value;
 
-                    if (currOrder.Value.Status == OrderStatus.InProgress && order.DriverId.Equals(driverId))
+                    if (currOrder.Value.Status == OrderStatus.InProgress && order.DriverId != null && order.DriverId.Equals(driverId))
                     {
                         var completedRide = order;
                         completedRide.Status = OrderStatus.Finished;
@@ -373,7 +373,7 @@ namespace OrderService
                 while (await enums.MoveNextAsync(CancellationToken.None))
                 {
                     var currOrder = enums.Current.Value;
-                    if (currOrder.Status == OrderStatus.Finished && currOrder.DriverId.Equals(driverId))
+                    if (currOrder.Status == OrderStatus.Finished && currOrder.DriverId != null && currOrder.DriverId.Equals(driverId))
                     {
                         orders.Add(new OrderInfoDto(currOrder));
                     }

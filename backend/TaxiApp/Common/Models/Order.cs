@@ -32,9 +32,9 @@ namespace Common.Models
         [DataMember]
         public OrderStatus Status { get; set; }    
         [DataMember]
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         [DataMember]
-        public string DriverId { get; set; }
+        public string? DriverId { get; set; }
 
         public Order(OrderEntity order)
         {
@@ -60,8 +60,8 @@ namespace Common.Models
             ArriveAddress = arriveAddress;
             Distance = rand.Next(1, 5);
             Price = rand.Next(190, 700);
-            ScheduledPickup = rand.Next(3, 11);
-            Duration = rand.Next(2, 10);
+            ScheduledPickup = rand.Next(13, 21);
+            Duration = rand.Next(10, 20);
             StartingTime = DateTime.UtcNow.AddMinutes(ScheduledPickup); 
             Status = OrderStatus.OnHold;
             UserId = userId;

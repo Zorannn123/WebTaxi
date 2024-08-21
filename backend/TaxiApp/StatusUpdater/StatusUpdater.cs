@@ -46,8 +46,16 @@ namespace StatusUpdater
                 cancellationToken.ThrowIfCancellationRequested();
 
                 ServiceEventSource.Current.ServiceMessage(this.Context, "Working-{0}", ++iterations);
-                IOrder proxy = ServiceProxy.Create<IOrder>(new Uri("fabric:/TaxiApp/OrderService"), new ServicePartitionKey(1));
-                var confirmationResult = await proxy.UpdateStatuses();
+                try
+                {
+                    IOrder proxy = ServiceProxy.Create<IOrder>(new Uri("fabric:/TaxiApp/OrderService"), new ServicePartitionKey(1));
+                    var confirmationResult = await proxy.UpdateStatuses();
+
+                }
+                catch (Exception ex)
+                {
+                    ServiceEventSource.Current.ServiceMessage(this.Context, "Exception in RunAsync: {0}", ex.ToString());
+                }
 
                 await Task.Delay(TimeSpan.FromMilliseconds(300), cancellationToken);
             }

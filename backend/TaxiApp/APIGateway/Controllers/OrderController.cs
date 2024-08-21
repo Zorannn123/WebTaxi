@@ -185,7 +185,7 @@ namespace APIGateway.Controllers
 
                 if (isBusy)
                 {
-                    return Unauthorized();
+                    return StatusCode(StatusCodes.Status423Locked, "You are currently busy. Please try again later.");
                 }
 
                 IOrder proxy = ServiceProxy.Create<IOrder>(new Uri("fabric:/TaxiApp/OrderService"), new ServicePartitionKey(1));

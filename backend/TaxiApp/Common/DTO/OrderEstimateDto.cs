@@ -32,6 +32,8 @@ namespace Common.DTO
         public string Status { get; set; }
         [DataMember]
         public DateTime StartingTime { get; set; }
+        [DataMember]
+        public string? DriverId { get; set; }
 
         public OrderEstimateDto(Order order)
         {
@@ -45,6 +47,7 @@ namespace Common.DTO
             Duration = order.Duration;
             Status = order.Status.ToString();
             StartingTime = order.StartingTime;
+            DriverId = order.DriverId;
         }
     }
 }

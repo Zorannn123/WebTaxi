@@ -99,3 +99,71 @@ export const getDrivers = async () => {
         throw error;
     }
 };
+
+export const rateRide = async (orderId, rate, driverId) => {
+    try {
+        const response = await apiClient.post('rate/rateRide', {
+            orderId,
+            rate,
+            driverId
+        }, {
+            timeout: 30000
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error rating a ride: ', error);
+        throw error;
+    }
+};
+
+export const getDriverRating = async (driverId) => {
+    try {
+        const response = await apiClient.get(`rate/getRating?driverId=${driverId}`, {
+            timeout: 30000
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching driver rating: ', error);
+        throw error;
+    }
+};
+
+export const blockDriver = async (driverId) => {
+    try {
+        const response = await apiClient.post(`administrator/blockDriver?email=${driverId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error blocking driver: ', error);
+        throw error;
+    }
+};
+
+export const unBlockDriver = async (driverId) => {
+    try {
+        const response = await apiClient.post(`administrator/unBlockDriver?email=${driverId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error blocking driver: ', error);
+        throw error;
+    }
+};
+
+export const getBusyStatus = async () => {
+    try {
+        const response = await apiClient.get("user/busyStatus");
+        return response.data;
+    } catch (error) {
+        console.error('Error blocking driver: ', error);
+        throw error;
+    }
+};
+
+export const getIsBlockedStatus = async () => {
+    try {
+        const response = await apiClient.get("user/isBlocked");
+        return response.data;
+    } catch (error) {
+        console.error('Error blocking driver: ', error);
+        throw error;
+    }
+};

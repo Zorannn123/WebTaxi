@@ -15,6 +15,7 @@ import { MyRides } from './components/MyRides/MyRides';
 import { AllRides } from './components/AllRides/AllRides';
 import { Logout } from './components/auth/Logout/Logout';
 import { Drivers } from './components/AllDrivers/AllDrivers';
+import { DriverRating } from './components/DriverRating/DriverRating';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <Route path="/allRides" element={<AllRides />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/allDrivers" element={<Drivers />} />
+          <Route path="/driverRating" element={<DriverRating />} />
         </Route>
       </Routes>
     </Router>

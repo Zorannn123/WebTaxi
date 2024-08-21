@@ -25,6 +25,7 @@ namespace Common.Interface
         Task<bool> DenyVerificationAsync(string id);
         Task<IEnumerable<DriverDto>> GetDriversAsync();
         Task<bool> DriverBlockAsync(string id);
+        Task<bool> DriverUnBlockAsync(string id);
 
     }
 }

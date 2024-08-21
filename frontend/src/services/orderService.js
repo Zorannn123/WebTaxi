@@ -29,7 +29,9 @@ export const deleteOrder = async (id) => {
 
 export const getOnHoldOrders = async () => {
     try {
-        const response = await apiClient.get('/order/onHoldOrders')
+        const response = await apiClient.get('/order/onHoldOrders', {
+            timeout: 30000
+        });
         return response.data
     } catch (error) {
         throw error
@@ -47,7 +49,9 @@ export const acceptOrder = async (id) => {
 
 export const getPreviousOrdersDriver = async () => {
     try {
-        const response = await apiClient.get('/order/allPreviousOrders')
+        const response = await apiClient.get('/order/allPreviousOrders', {
+            timeout: 30000
+        });
         return response.data;
     } catch (error) {
         throw error

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createNewRide } from "../../services/userService";
 
@@ -7,6 +7,13 @@ export const NewRide = () => {
     const [arriveAddress, setArriveAddress] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const savedOrderId = localStorage.getItem('orderId');
+        if (savedOrderId) {
+            navigate(`/confirmOrder/${savedOrderId}`);
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -19,7 +26,8 @@ export const NewRide = () => {
         try {
             const data = await createNewRide(startAddress, arriveAddress);
             console.log(data.id);
-            if (data) {
+            if (data && data.id) {
+                localStorage.setItem('orderId', data.id);
                 window.alert('Ride created successfully!');
                 navigate(`/confirmOrder/${data.id}`);
             }

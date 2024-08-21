@@ -87,7 +87,10 @@ export const NewRides = () => {
                     <button onClick={HandleBack}>Back</button>
                 </>
             ) : (
-                <p>No on-hold orders available.</p>
+                <>
+                    <p>No on-hold orders available.</p>
+                    <button onClick={HandleBack}>Back</button>
+                </>
             )}
         </div>
     );

@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getEstimateOrder, confirmOrder, deleteOrder } from "../../services/orderService";
-import useWebSocket from 'react-use-websocket';
 import Countdown from 'react-countdown';
-
-const WS_URL = process.env.REACT_APP_WS_URL;
+import { rateRide } from "../../services/userService";
 
 export const ConfirmOrder = () => {
     const { id } = useParams();
     const [order, setOrder] = useState(null);
+    const [showInput, setShowInput] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [rating, setRating] = useState("");
     const navigate = useNavigate();
-
-    const { sendMessage, lastMessage, readyState } = useWebSocket(WS_URL, {
-        onOpen: () => console.log('WebSocket connection opened.'),
-        onMessage: () => console.log('Message received: ', lastMessage),
-        onClose: () => console.log('WebSocket connection closed.'),
-        shouldReconnect: (closeEvent) => true,
-    });
 
     useEffect(() => {
         const fetchCurrentOrder = async () => {
@@ -36,7 +29,6 @@ export const ConfirmOrder = () => {
         try {
             const success = await confirmOrder(id);
             if (success) {
-                sendMessage(JSON.stringify({ action: 'newRide', orderId: id }))
                 window.alert('Order accepted successfully!');
                 window.location.reload()
             } else {
@@ -76,13 +68,37 @@ export const ConfirmOrder = () => {
         }
     };
 
+    const HandleRate = () => {
+        setShowInput(true);
+    };
+
+    const handleRatingChange = (e) => {
+        setRating(e.target.value);
+    };
+
+    const handleSubmitRating = async () => {
+        try {
+            const result = await rateRide(order.id, parseInt(rating), order.driverId)
+            console.log(result);
+            setShowInput(false);
+            setRating("");
+            localStorage.removeItem("orderId");
+            window.alert("Your rating successfully recorded!");
+            navigate("/");
+        } catch (error) {
+            console.error("Error submiting rating: ", error);
+        }
+    };
+
+    //const clearLocalOrder = () => {
+    //    return localStorage.removeItem("orderId");
+    //}
+
     if (!order) {
         return <div>Loading...</div>;
     }
 
     let date = new Date(order.startingTime);
-    console.log(date.getTime())
-    console.log(Date.now())
     return (
         <div>
             <h1>Confirm Order</h1>
@@ -119,9 +135,32 @@ export const ConfirmOrder = () => {
                 />
             </div>}
 
-            {order.status === "Finished" && <div>
+            {order.status === "Finished" && (<div>
                 Order is finished
-            </div>}
+
+                <br />
+                <br />
+                {!showInput && (
+                    <button onClick={HandleRate}>Rate ride</button>
+                )}
+                {showInput && (
+                    <div>
+                        <label>Rate a ride(1-5)</label>
+                        <br />
+                        <input
+                            type="number"
+                            value={rating}
+                            onChange={handleRatingChange}
+                            placeholder="Enter your rating"
+                            min="1"
+                            max="5"
+                        />
+                        <button onClick={handleSubmitRating}>
+                            Submit Rating
+                        </button>
+                    </div>
+                )}
+            </div>)}
 
         </div>
     );

@@ -81,6 +81,23 @@ namespace APIGateway.Controllers
 
         }
 
-        
+        [HttpPost]
+        [Route("unBlockDriver")]
+        public async Task<IActionResult> DriverUnBlockAsync(string email)
+        {
+            try
+            {
+                IUser proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UserService"), new ServicePartitionKey(1));
+                var retVal = await proxy.DriverUnBlockAsync(email);
+                return Ok(retVal);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+
     }
 }
