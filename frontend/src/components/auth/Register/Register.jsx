@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../../services/userService';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Box from "@mui/material/Box";
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
 
 export const Register = () => {
     const [username, setUsername] = useState('');
@@ -67,73 +75,129 @@ export const Register = () => {
     };
 
     return (
-        <div>
-            <h1>Register</h1>
-            <form onSubmit={handleSubmit}>
-                <label>Username:</label><br />
-                <input
-                    type="text"
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100vh',
+                textAlign: 'center',
+                padding: 2,
+                backgroundColor: "#f8f9fa",
+            }}
+        >
+            <Typography variant="h4" component="h1" sx={{ marginBottom: '30px', fontFamily: "Roboto" }}>
+                Register
+            </Typography>
+
+            <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: '500px' }}>
+                <TextField
+                    label="Username"
+                    variant="outlined"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                /><br />
-                <label>Email:</label><br />
-                <input
-                    type="text"
+                    sx={{ marginBottom: '16px', width: "80%" }}
+                />
+                <br />
+                <TextField
+                    label="Email"
+                    variant="outlined"
+                    type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                /><br />
-                <label>Password:</label><br />
-                <input
+                    sx={{ marginBottom: '16px', width: "80%" }}
+                />
+                <br />
+                <TextField
+                    label="Password"
+                    variant="outlined"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                /><br />
-                <label>First Name:</label><br />
-                <input
-                    type="text"
+                    sx={{ marginBottom: '16px', width: "80%" }}
+                />
+                <br />
+                <TextField
+                    label="First Name"
+                    variant="outlined"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                /><br />
-                <label>Last Name:</label><br />
-                <input
-                    type="text"
+                    sx={{ marginBottom: '16px', width: "80%" }}
+                />
+                <br />
+                <TextField
+                    label="Last Name"
+                    variant="outlined"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                /><br />
-                <label>Date of Birth:</label><br />
-                <input
+                    sx={{ marginBottom: '16px', width: "80%" }}
+                />
+                <br />
+                <TextField
+                    label="Date of Birth"
                     type="date"
+                    variant="outlined"
+                    InputLabelProps={{ shrink: true }}
                     value={dateOfBirth}
                     onChange={(e) => setDateOfBirth(e.target.value)}
-                /><br />
-                <label>Address:</label><br />
-                <input
-                    type="text"
+                    sx={{ marginBottom: '16px', width: "80%" }}
+                />
+                <br />
+                <TextField
+                    label="Address"
+                    variant="outlined"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                /><br />
-                <label>Role:</label><br />
-                <select
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                >
-                    <option value="" disabled>Select Role</option>
-                    <option value="Driver">Driver</option>
-                    <option value="User">User</option>
-                </select><br />
-                <label>Image:</label><br />
+                    sx={{ marginBottom: '16px', width: "80%" }}
+                />
+                <br />
+                <FormControl fullWidth sx={{ marginBottom: '16px', width: "80%" }}>
+                    <InputLabel>Role</InputLabel>
+                    <Select
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                        label="Role"
+                    >
+                        <MenuItem value="" disabled>Select Role</MenuItem>
+                        <MenuItem value="Driver">Driver</MenuItem>
+                        <MenuItem value="User">User</MenuItem>
+                    </Select>
+                </FormControl>
+                <br />
                 <input
                     type="file"
                     onChange={handleFileChange}
-                /><br />
-                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-                {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-                <button type="submit">Register</button>
+                    style={{ marginBottom: '16px', width: "80%" }}
+                />
+                <br />
+                {errorMessage && (
+                    <Typography variant="body2" color="error" sx={{ marginBottom: '16px' }}>
+                        {errorMessage}
+                    </Typography>
+                )}
+                {successMessage && (
+                    <Typography variant="body2" color="success" sx={{ marginBottom: '16px' }}>
+                        {successMessage}
+                    </Typography>
+                )}
+                <Button
+                    type="submit"
+                    variant="outlined"
+                    sx={{ marginBottom: '16px', backgroundColor: '#f7e32f', color: 'black', width: '80%' }}
+                >
+                    Register
+                </Button>
             </form>
-            <div>
-                Already have an account?
-                <a href='/login'>Login</a>
-            </div>
-        </div>
+
+            <Box
+                sx={{
+                    marginTop: '16px',
+                    fontSize: '16px',
+                }}
+            >
+                Already have an account? <a href='/login' style={{ textDecoration: 'none', color: '#f7e32f', textDecoration: 'underline' }}>Login</a>
+            </Box>
+        </Box>
     );
 };

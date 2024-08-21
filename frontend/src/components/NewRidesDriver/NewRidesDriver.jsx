@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { getOnHoldOrders, acceptOrder } from "../../services/orderService";
 import { useNavigate } from 'react-router-dom';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import "@fontsource/roboto";
 
 export const NewRides = () => {
     const [orders, setOrders] = useState([]);
@@ -43,55 +54,115 @@ export const NewRides = () => {
 
     if (busy) {
         return (
-            <>
-                <p>You are busy with an order.</p>
-                <button onClick={HandleBack}>Back</button>
-            </>
+            <Box
+                sx={{
+                    display: 'flex',
+                    minHeight: '100vh',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    padding: '20px',
+                    backgroundColor: "#f8f9fa"
+                }}>
+                <Typography variant="h4" gutterBottom
+                    sx={{ marginBottom: '20px', fontFamily: "Roboto", marginTop: '30px' }}>
+                    You are busy with an order.
+                </Typography>
+                <Button
+                    variant="outlined"
+                    sx={{ marginTop: '20px', backgroundColor: 'black', color: '#f7e32f' }}
+                    onClick={HandleBack}
+                >
+                    Back
+                </Button>
+            </Box>
         )
     }
 
     return (
-        <div>
-            <h1>On-Hold Orders</h1>
-            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        <Box
+            sx={{
+                display: 'flex',
+                minHeight: '100vh',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                padding: '20px',
+                backgroundColor: "#f8f9fa"
+            }}
+        >
+            <Typography variant="h4" gutterBottom
+                sx={{ marginBottom: '20px', fontFamily: "Roboto", marginTop: '30px' }}>
+                On-Hold Orders
+            </Typography>
+
+            {errorMessage && (
+                <Typography variant="body1" color="error">
+                    {errorMessage}
+                </Typography>
+            )}
+
             {orders.length > 0 ? (
                 <>
-                    <table border={1}>
-                        <thead>
-                            <tr>
-                                <th>Start Address</th>
-                                <th>Arrive Address</th>
-                                <th>Distance</th>
-                                <th>Duration</th>
-                                <th>Price</th>
-                                <th>User</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {orders.map((order) => (
-                                <tr key={order.id}>
-                                    <td>{order.startAddress}</td>
-                                    <td>{order.arriveAddress}</td>
-                                    <td>{order.distance}km</td>
-                                    <td>{order.duration}min</td>
-                                    <td>{order.price}din</td>
-                                    <td>{order.userId}</td>
-                                    <td>
-                                        <button onClick={() => handleAccept(order.id)}>Accept</button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <button onClick={HandleBack}>Back</button>
+                    <TableContainer component={Paper} sx={{ maxHeight: '500px', marginTop: '20px' }}>
+                        <Table stickyHeader aria-label="on-hold orders table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Start Address</TableCell>
+                                    <TableCell>Arrive Address</TableCell>
+                                    <TableCell>Distance</TableCell>
+                                    <TableCell>Duration</TableCell>
+                                    <TableCell>Away from</TableCell>
+                                    <TableCell>Price</TableCell>
+                                    <TableCell>User</TableCell>
+                                    <TableCell>Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {orders.map((order) => (
+                                    <TableRow key={order.id}>
+                                        <TableCell>{order.startAddress}</TableCell>
+                                        <TableCell>{order.arriveAddress}</TableCell>
+                                        <TableCell>{order.distance}km</TableCell>
+                                        <TableCell>{order.duration}min</TableCell>
+                                        <TableCell>{order.scheduledPickup}min</TableCell>
+                                        <TableCell>{order.price}din</TableCell>
+                                        <TableCell>{order.userId}</TableCell>
+                                        <TableCell>
+                                            <Button
+                                                variant="outlined"
+                                                sx={{ marginBottom: '8px', backgroundColor: '#f7e32f', color: 'black' }}
+                                                onClick={() => handleAccept(order.id)}
+                                            >
+                                                Accept
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <Button
+                        variant="outlined"
+                        sx={{ marginTop: '20px', backgroundColor: 'black', color: '#f7e32f' }}
+                        onClick={HandleBack}
+                    >
+                        Back
+                    </Button>
                 </>
             ) : (
                 <>
-                    <p>No on-hold orders available.</p>
-                    <button onClick={HandleBack}>Back</button>
+                    <Typography variant="h6" gutterBottom
+                        sx={{ marginBottom: '20px', fontFamily: "Roboto", marginTop: '30px' }}>
+                        No on-hold orders available.
+                    </Typography>
+                    <Button
+                        variant="outlined"
+                        sx={{ marginTop: '8px', backgroundColor: 'black', color: '#f7e32f' }}
+                        onClick={HandleBack}
+                    >
+                        Back
+                    </Button>
                 </>
             )}
-        </div>
+        </Box>
     );
 };

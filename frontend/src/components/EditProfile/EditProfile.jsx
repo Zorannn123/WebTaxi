@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUserProfile, updateUserProfile } from '../../services/userService';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import "@fontsource/roboto";
 
 export const EditProfile = () => {
     const [username, setUsername] = useState('');
@@ -18,8 +23,11 @@ export const EditProfile = () => {
 
     //TODO:
     const fetchUserProfile = async () => {
+
+        console.log("localStorage.getItem('userImg')", localStorage.getItem('userImg'))
+
         try {
-            const token = localStorage.getItem('testToken');
+            const token = localStorage.getItem('authToken');
             const response = await getUserProfile(token);
             const userProfile = response;
             console.log(response);
@@ -31,7 +39,11 @@ export const EditProfile = () => {
                 setPassword(userProfile.password);
                 setRole(userProfile.role);
                 setAddress(userProfile.address);
-                setImage(userProfile.image);
+                convertImageToBase64FromSrc(localStorage.getItem('userImg'), (base64Image => {
+                    console.log("base64Image", base64Image)
+                    setImage(base64Image);
+                }))
+
                 setDateOfBirth(userProfile.dateOfBirth);
             }
             else {
@@ -40,6 +52,8 @@ export const EditProfile = () => {
         } catch (error) {
             console.error('Error fetching user profile:', error);
         }
+
+        console.log("image", image)
     };
 
     useEffect(() => {
@@ -48,13 +62,13 @@ export const EditProfile = () => {
 
 
     const handleFileChange = (e) => {
+        console.log("uso")
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 const base64Image = reader.result.split(',')[1];
                 setImage(base64Image);
-                console.log(image);
             };
             reader.readAsDataURL(file);
         }
@@ -73,8 +87,9 @@ export const EditProfile = () => {
             dateOfBirth,
             address,
             role,
-            image
+            image: image || localStorage.getItem('userImg')
         };
+        console.log(userData)
 
         try {
             const result = await updateUserProfile(userData);
@@ -96,53 +111,162 @@ export const EditProfile = () => {
         navigate("/yourProfile");
     }
 
+    const convertImageToBase64FromSrc = (imageUrl, callback) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous'; // This might help with CORS issues, but it's not always effective
+        img.onload = () => {
+            // Create a canvas to draw the image
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas dimensions to image dimensions
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            // Draw the image on canvas
+            ctx.drawImage(img, 0, 0);
+
+            // Get the Base64 string from the canvas
+            const base64Image = canvas.toDataURL('image/jpeg');
+
+            // Optionally, strip the MIME type from the result
+            const base64Data = base64Image.split(',')[1];
+
+            callback(base64Data);
+        };
+
+        img.onerror = (error) => {
+            console.error('Error loading image:', error);
+        };
+
+        img.src = imageUrl;
+    };
+
+
+    const convertImageToBase64 = async (imageUrl) => {
+        try {
+            // Fetch the image from the URL
+            const response = await fetch(imageUrl);
+            if (!response.ok) {
+                throw new Error('Failed to fetch the image.');
+            }
+
+            // Convert the response to a Blob
+            const blob = await response.blob();
+
+            // Convert the Blob to a Base64 string
+            const reader = new FileReader();
+            return new Promise((resolve, reject) => {
+                reader.onloadend = () => {
+                    // `reader.result` contains the Base64 string
+                    resolve(reader.result.split(',')[1]); // Remove the data URL prefix
+                };
+                reader.onerror = () => reject(new Error('Failed to read the image.'));
+                reader.readAsDataURL(blob);
+            });
+        } catch (error) {
+            console.error('Error converting image to Base64:', error);
+        }
+    };
 
     return (
-        <div>
-            <h1>Edit Profile</h1>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100vh',
+                textAlign: 'center',
+                marginTop: '-40px',
+                padding: 2,
+                backgroundColor: "#f8f9fa"
+            }}
+        >
+            <Typography variant="h4" component="h1" sx={{ marginBottom: '30px', fontFamily: "Roboto" }}>
+                Edit Profile
+            </Typography>
+
             <form onSubmit={handleSubmit}>
-                <label>Username:</label><br />
-                <input
-                    type="text"
+                <TextField
+                    label="Username"
+                    variant="outlined"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                /><br />
-                <label>First Name:</label><br />
-                <input
-                    type="text"
+                    sx={{ marginBottom: '16px', width: "300px" }}
+                />
+                <br />
+                <TextField
+                    label="First Name"
+                    variant="outlined"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                /><br />
-                <label>Last Name:</label><br />
-                <input
-                    type="text"
+                    sx={{ marginBottom: '16px', width: "300px" }}
+                />
+                <br />
+                <TextField
+                    label="Last Name"
+                    variant="outlined"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                /><br />
-                <label>Date of Birth:</label><br />
-                <input
+                    sx={{ marginBottom: '16px', width: "300px" }}
+                />
+                <br />
+                <TextField
+                    label="Date of Birth"
                     type="date"
+                    variant="outlined"
+
+                    InputLabelProps={{ shrink: true }}
                     value={dateOfBirth}
                     onChange={(e) => setDateOfBirth(e.target.value)}
-                /><br />
-                <label>Address:</label><br />
-                <input
-                    type="text"
+                    sx={{ marginBottom: '16px', width: "300px" }}
+                />
+                <br />
+                <TextField
+                    label="Address"
+                    variant="outlined"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                /><br />
-                <label>Image:</label><br />
+                    sx={{ marginBottom: '16px', width: "300px" }}
+                />
+                <br />
                 <input
                     type="file"
                     onChange={handleFileChange}
+                    style={{ marginBottom: '16px' }}
                 />
-                {image && <img src={image} alt='uploaded' />}
                 <br />
-                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-                {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-                <button type="submit">Update Profile</button>
+                {image && <img src={`data:image/jpeg;base64,${image}`} alt="uploaded" style={{ marginBottom: '16px', maxWidth: '200px' }} />}
+                <br />
+                {errorMessage && (
+                    <Typography variant="body2" color="error" sx={{ marginBottom: '16px' }}>
+                        {errorMessage}
+                    </Typography>
+                )}
+                {successMessage && (
+                    <Typography variant="body2" color="success" sx={{ marginBottom: '16px' }}>
+                        {successMessage}
+                    </Typography>
+                )}
+
+                <Box>
+                    <Button
+                        type="submit"
+                        variant="outlined"
+                        sx={{ marginBottom: '8px', backgroundColor: '#f7e32f', color: 'black', marginRight: '20px' }}
+                    >
+                        Update Profile
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        sx={{ marginBottom: '8px', backgroundColor: 'black', color: '#f7e32f' }}
+                        onClick={HandleBack}
+                    >
+                        Back
+                    </Button>
+                </Box>
             </form>
-            <button onClick={HandleBack}>Back</button>
-        </div>
+        </Box>
     );
 };

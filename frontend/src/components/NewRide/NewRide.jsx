@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createNewRide } from "../../services/userService";
+import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import "@fontsource/roboto";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+
 
 export const NewRide = () => {
     const [startAddress, setStartAddress] = useState('');
@@ -28,7 +34,6 @@ export const NewRide = () => {
             console.log(data.id);
             if (data && data.id) {
                 localStorage.setItem('orderId', data.id);
-                window.alert('Ride created successfully!');
                 navigate(`/confirmOrder/${data.id}`);
             }
         } catch (error) {
@@ -42,25 +47,61 @@ export const NewRide = () => {
     }
 
     return (
-        <div>
-            <h1>Create New Ride</h1>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100vh',
+                textAlign: 'center',
+                marginTop: '-100px',
+                padding: 2,
+                backgroundColor: "#f8f9fa"
+            }}
+        >
             <form onSubmit={handleSubmit}>
-                <label>Start Address:</label><br />
-                <input
-                    type="text"
+                <Typography variant="h4" component="h1" sx={{ marginBottom: '30px', fontFamily: "Roboto" }}>
+                    Create New Ride
+                </Typography>
+                <TextField
+                    label="Start Address:"
+                    variant="outlined"
                     value={startAddress}
                     onChange={(e) => setStartAddress(e.target.value)}
-                /><br />
-                <label>Arrive Address:</label><br />
-                <input
-                    type="text"
+                    sx={{ marginBottom: '16px', width: "300px" }}
+                />
+                <br />
+                <TextField
+                    label="Arrive Address:"
+                    variant="outlined"
                     value={arriveAddress}
                     onChange={(e) => setArriveAddress(e.target.value)}
-                /><br />
-                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-                <button type="submit">Order a ride</button>
+                    sx={{ marginBottom: '16px', width: "300px" }}
+                />
+                <br />
+                {errorMessage && (
+                    <Typography variant="body2" color="error" sx={{ marginBottom: '16px' }}>
+                        {errorMessage}
+                    </Typography>
+                )}
+                <Box>
+                    <Button
+                        type="submit"
+                        variant="outlined"
+                        sx={{ marginBottom: '8px', backgroundColor: '#f7e32f', color: 'black', marginRight: '20px' }}
+                    >
+                        Order a ride
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        sx={{ marginBottom: '8px', backgroundColor: 'black', color: '#f7e32f' }}
+                        onClick={HandleBack}
+                    >
+                        Back
+                    </Button>
+                </Box>
             </form>
-            <button onClick={HandleBack}>Back</button>
-        </div>
+        </Box>
     );
 };

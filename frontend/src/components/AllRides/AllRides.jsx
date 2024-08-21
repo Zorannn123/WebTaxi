@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllOrders } from "../../services/orderService";
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import Box from "@mui/material/Box";
 
 export const AllRides = () => {
     const [orders, setOrders] = useState([]);
@@ -26,46 +35,56 @@ export const AllRides = () => {
     }
 
     return (
-        <div>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'left',
+                padding: '20px',
+            }}
+        >
             <h1>All Rides</h1>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             {orders.length > 0 ? (
                 <>
-                    <table border={1}>
-                        <thead>
-                            <tr>
-                                <th>Start Address</th>
-                                <th>Arrive Address</th>
-                                <th>Distance</th>
-                                <th>Duration</th>
-                                <th>Price</th>
-                                <th>Date</th>
-                                <th>Driver</th>
-                                <th>User</th>
-                                <th>Order State</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {orders.map((order) => (
-                                <tr key={order.id}>
-                                    <td>{order.startAddress}</td>
-                                    <td>{order.arriveAddress}</td>
-                                    <td>{order.distance}km</td>
-                                    <td>{order.duration}min</td>
-                                    <td>{order.price}din</td>
-                                    <td>{order.startingTime}</td>
-                                    <td>{order.driverId}</td>
-                                    <td>{order.userId}</td>
-                                    <td>{order.status}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <button onClick={HandleBack}>Back</button>
+                    <TableContainer component={Paper} sx={{ margin: 'auto', maxHeight: '700px' }}>
+                        <Table sx={{ minWidth: 500 }} aria-label="rides table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Start Address</TableCell>
+                                    <TableCell>Arrive Address</TableCell>
+                                    <TableCell>Distance</TableCell>
+                                    <TableCell>Duration</TableCell>
+                                    <TableCell>Price</TableCell>
+                                    <TableCell>Date</TableCell>
+                                    <TableCell>Driver</TableCell>
+                                    <TableCell>User</TableCell>
+                                    <TableCell>Order State</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {orders.map((order) => (
+                                    <TableRow key={order.id}>
+                                        <TableCell>{order.startAddress}</TableCell>
+                                        <TableCell>{order.arriveAddress}</TableCell>
+                                        <TableCell>{order.distance}km</TableCell>
+                                        <TableCell>{order.duration}min</TableCell>
+                                        <TableCell>{order.price}din</TableCell>
+                                        <TableCell>{order.startingTime}</TableCell>
+                                        <TableCell>{order.driverId}</TableCell>
+                                        <TableCell>{order.userId}</TableCell>
+                                        <TableCell>{order.status}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <br />
+                    <Button variant="contained" sx={{ width: "30px" }} onClick={HandleBack}>Back</Button>
                 </>
             ) : (
                 <p>No previous rides available.</p>
             )}
-        </div>
+        </Box>
     );
 };

@@ -45,63 +45,67 @@ export const Navbar = () => {
 
     return (
         <nav className={styles.navbar}>
-            {!role && (
-                <>
-                    <div>
-                        <a href="/login">Login</a>
-                    </div>
-                    <div>
-                        <a href="/register">Register</a>
-                    </div>
-                </>
-            )}
+            {
+                !role && (
+                    <>
+                        <div>
+                            <a href="/login">Login</a>
+                        </div>
+                        <div>
+                            <a href="/register">Register</a>
+                        </div>
+                    </>
+                )
+            }
 
-            {role && (
-                <>
-                    <div>
-                        <a href="/yourProfile">Your Profile</a>
-                    </div>
+            {
+                role && (
+                    <>
+                        <div>
+                            <a href="/yourProfile">Your Profile</a>
+                        </div>
 
-                    {role === "User" && (
-                        <>
-                            {!isBusy && (<div>
-                                <a href="/newRide">New Ride</a>
-                            </div>)}
-                            <div>
-                                <a href="/previousRides">Previous Rides</a>
-                            </div>
-                        </>
-                    )}
+                        {role === "User" && (
+                            <>
+                                {!isBusy && (<div>
+                                    <a href="/newRide">New Ride</a>
+                                </div>)}
+                                <div>
+                                    <a href="/previousRides">Previous Rides</a>
+                                </div>
+                            </>
+                        )}
 
-                    {role === "Driver" && (
-                        <>
-                            <div>
-                                <a href="/myRides">My Rides</a>
-                            </div>
-                            {!isBusy && !isBlocked && (<div>
-                                <a href="/newRides">New Rides</a>
-                            </div>)}
-                        </>
-                    )}
+                        {role === "Driver" && (
+                            <>
+                                <div>
+                                    <a href="/myRides">My Rides</a>
+                                </div>
+                                {!isBusy && !isBlocked && (<div>
+                                    <a href="/newRides">New Rides</a>
+                                </div>)}
+                            </>
+                        )}
 
-                    {role === "Admin" && (
-                        <>
-                            <div>
-                                <a href="/allRides">All Rides</a>
-                            </div>
-                            <div>
-                                <a href="/allDrivers">All Drivers</a>
-                            </div>
-                            <div>
-                                <a href="/driverRating">Driver Rating</a>
-                            </div>
-                        </>
-                    )}
-                    <div>
-                        <a href="/logout">Logout</a>
-                    </div>
-                </>
-            )}
-        </nav>
+                        {role === "Admin" && (
+                            <>
+                                <div>
+                                    <a href="/allRides">All Rides</a>
+                                </div>
+                                <div>
+                                    <a href="/allDrivers">All Drivers</a>
+                                </div>
+                                <div>
+                                    <a href="/driverRating">Driver Rating</a>
+                                </div>
+                            </>
+                        )}
+                        <div>
+                            <a href="/logout">Logout</a>
+                        </div>
+                    </>
+                )
+            }
+        </nav >
     );
 };

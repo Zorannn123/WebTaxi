@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../../services/userService';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Box from "@mui/material/Box";
+
+
 
 export const Login = () => {
     const [email, setEmail] = useState('');
@@ -23,7 +29,6 @@ export const Login = () => {
             if (data) {
                 localStorage.setItem('authToken', data);
                 navigate('/');
-                window.alert('Login successful!');
             } else {
                 console.error("Token not found in the response");
                 setErrorMessage("Token not found in the response");
@@ -35,28 +40,64 @@ export const Login = () => {
     };
 
     return (
-        <div>
-            <h1>Login</h1>
-            <form onSubmit={handleSubmit}>
-                <label>Email:</label><br />
-                <input
-                    type="text"
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100vh',
+                textAlign: 'center',
+                marginTop: '-100px',
+                padding: 2,
+                backgroundColor: "#f8f9fa",
+            }}
+        >
+            <Typography variant="h4" component="h1" sx={{ marginBottom: '30px', fontFamily: "Roboto" }}>
+                Login
+            </Typography>
+
+            <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: '400px' }}>
+                <TextField
+                    label="Email"
+                    variant="outlined"
+                    type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                /><br />
-                <label>Password:</label><br />
-                <input
+                    sx={{ marginBottom: '16px', width: "80%" }}
+                />
+                <br />
+                <TextField
+                    label="Password"
+                    variant="outlined"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                /><br />
-                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-                <button type="submit">Login</button>
+                    sx={{ marginBottom: '16px', width: "80%" }}
+                />
+                <br />
+                {errorMessage && (
+                    <Typography variant="body2" color="error" sx={{ marginBottom: '16px' }}>
+                        {errorMessage}
+                    </Typography>
+                )}
+                <Button
+                    type="submit"
+                    variant="outlined"
+                    sx={{ marginBottom: '16px', backgroundColor: '#f7e32f', color: 'black', width: '80%' }}
+                >
+                    Login
+                </Button>
             </form>
-            <div>
-                Don't have an account?
-                <a href='/register'>Sign up</a>
-            </div>
-        </div>
+
+            <Box
+                sx={{
+                    marginTop: '16px',
+                    fontSize: '16px',
+                }}
+            >
+                Don't have an account? <a href='/register' style={{ textDecoration: 'none', color: '#f7e32f', textDecoration: 'underline' }}>Sign up</a>
+            </Box>
+        </Box>
     );
 };
