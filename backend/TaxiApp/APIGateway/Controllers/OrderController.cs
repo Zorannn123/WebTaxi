@@ -41,7 +41,7 @@ namespace APIGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Driver")]
         [HttpGet]
         [Route("estimateOrder")]
         public async Task<IActionResult> GetEstimateOrder(string orderId) 

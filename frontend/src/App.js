@@ -16,6 +16,7 @@ import { AllRides } from './components/AllRides/AllRides';
 import { Logout } from './components/auth/Logout/Logout';
 import { Drivers } from './components/AllDrivers/AllDrivers';
 import { DriverRating } from './components/DriverRating/DriverRating';
+import { MessageChat } from './components/Chat/Chat';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/allDrivers" element={<Drivers />} />
           <Route path="/driverRating" element={<DriverRating />} />
+          <Route path="/chat" element={<MessageChat />} />
         </Route>
       </Routes>
     </Router>

@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService", "OrderServic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatusUpdater", "StatusUpdater\StatusUpdater.csproj", "{6C6C2BCE-771F-4404-8CCB-138FB638E107}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RatingService", "RatingService\RatingService.csproj", "{4025F680-25D4-46B0-B129-E4C82330515F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RatingService", "RatingService\RatingService.csproj", "{4025F680-25D4-46B0-B129-E4C82330515F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatService", "ChatService\ChatService.csproj", "{4A211441-D310-413D-B0E2-2E59F890AE24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +97,14 @@ Global
 		{4025F680-25D4-46B0-B129-E4C82330515F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4025F680-25D4-46B0-B129-E4C82330515F}.Release|x64.ActiveCfg = Release|Any CPU
 		{4025F680-25D4-46B0-B129-E4C82330515F}.Release|x64.Build.0 = Release|Any CPU
+		{4A211441-D310-413D-B0E2-2E59F890AE24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A211441-D310-413D-B0E2-2E59F890AE24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A211441-D310-413D-B0E2-2E59F890AE24}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4A211441-D310-413D-B0E2-2E59F890AE24}.Debug|x64.Build.0 = Debug|Any CPU
+		{4A211441-D310-413D-B0E2-2E59F890AE24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A211441-D310-413D-B0E2-2E59F890AE24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A211441-D310-413D-B0E2-2E59F890AE24}.Release|x64.ActiveCfg = Release|Any CPU
+		{4A211441-D310-413D-B0E2-2E59F890AE24}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

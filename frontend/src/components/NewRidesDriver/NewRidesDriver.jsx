@@ -36,11 +36,12 @@ export const NewRides = () => {
     const handleAccept = async (orderId) => {
         try {
             const result = await acceptOrder(orderId);
+            localStorage.setItem('orderId', orderId);
             console.log(result)
             if (result) {
                 setOrders(orders.filter(order => order.id !== orderId));
                 setBusy(true);
-                window.alert('You accept the order successfully!');
+                navigate('/chat');
             }
         } catch (error) {
             setErrorMessage('Failed to accept order.');

@@ -162,6 +162,7 @@ export const Register = () => {
                         <MenuItem value="" disabled>Select Role</MenuItem>
                         <MenuItem value="Driver">Driver</MenuItem>
                         <MenuItem value="User">User</MenuItem>
+                        <MenuItem value="Admin">Admin</MenuItem>
                     </Select>
                 </FormControl>
                 <br />

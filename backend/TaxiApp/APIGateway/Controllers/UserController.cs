@@ -99,7 +99,6 @@ namespace APIGateway.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
         }
 
         [HttpGet]
@@ -135,5 +134,22 @@ namespace APIGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        /*[AllowAnonymous]
+        [HttpPost]
+        [Route("sendMessage")]
+        public async Task<IActionResult> StoreMessageAsync([FromBody]ChatMessageDto messageDto)
+        {
+            try
+            {
+                IChat proxy = ServiceProxy.Create<IChat>(new Uri("fabric:/TaxiApp/ChatService"), new ServicePartitionKey(1));
+                await proxy.PostMessageAsync(messageDto);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }*/
     }
 }

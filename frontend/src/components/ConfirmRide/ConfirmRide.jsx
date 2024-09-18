@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import "@fontsource/roboto";
+import { MessageChat } from "../Chat/Chat";
 
 export const ConfirmOrder = () => {
     const { id } = useParams();
@@ -35,7 +36,6 @@ export const ConfirmOrder = () => {
         try {
             const success = await confirmOrder(id);
             if (success) {
-                window.alert('Order accepted successfully!');
                 window.location.reload()
             } else {
                 setErrorMessage('Failed to accept the order.');
@@ -52,7 +52,6 @@ export const ConfirmOrder = () => {
         try {
             const success = await deleteOrder(id);
             if (success) {
-                window.alert('Order declined successfully!');
                 localStorage.removeItem("orderId");
                 navigate('/newRide');
             } else {
@@ -69,7 +68,7 @@ export const ConfirmOrder = () => {
             const delayDuration = 1000;
 
             setTimeout(() => {
-                window.location.reload();
+                window.location.reload()
             }, delayDuration);
         } else {
             // Render a countdown
@@ -86,22 +85,26 @@ export const ConfirmOrder = () => {
     };
 
     const handleSubmitRating = async () => {
-        try {
-            const result = await rateRide(order.id, parseInt(rating), order.driverId)
-            console.log(result);
-            setShowInput(false);
-            setRating("");
-            localStorage.removeItem("orderId");
-            window.alert("Your rating successfully recorded!");
-            navigate("/");
-        } catch (error) {
-            console.error("Error submiting rating: ", error);
+        if (rating >= 1 && rating <= 5) {
+            try {
+                const parsedRating = parseInt(rating);
+                const result = await rateRide(order.id, parsedRating, order.driverId);
+
+                console.log(result);
+
+                setShowInput(false);
+                setRating("");
+                localStorage.removeItem("orderId");
+
+                navigate("/");
+            } catch (error) {
+                console.error("Error submitting rating: ", error);
+                window.alert("Failed to submit rating. Please try again.");
+            }
+        } else {
+            window.alert("Rating must be between 1 and 5.");
         }
     };
-
-    //const clearLocalOrder = () => {
-    //    return localStorage.removeItem("orderId");
-    //}
 
     if (!order) {
         return <div>Loading...</div>;
@@ -115,7 +118,7 @@ export const ConfirmOrder = () => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '90vh',
+                minHeight: '100vh',
                 textAlign: 'center',
                 padding: 2,
                 backgroundColor: "#f8f9fa"
@@ -160,13 +163,15 @@ export const ConfirmOrder = () => {
             )}
 
             {order.status === "ConfirmedByUser" && (
-                <Typography variant="h6" sx={{ fontFamily: "Roboto" }}>
-                    Waiting for driver to accept
-                </Typography>
+                <Box>
+                    <Typography variant="h6" sx={{ fontFamily: "Roboto" }}>
+                        Waiting for driver to accept
+                    </Typography>
+                </Box>
             )}
 
             {order.status === "WaitingForPickup" && (
-                <Box sx={{ marginTop: '20px' }}>
+                <Box>
                     <Typography variant="h6" sx={{ fontFamily: "Roboto" }}>
                         Waiting for pickup
                     </Typography>
@@ -174,6 +179,7 @@ export const ConfirmOrder = () => {
                         date={date.getTime() + (order.scheduledPickup * 1000)}
                         renderer={renderer}
                     />
+                    {order.driverId != null && <MessageChat />}
                 </Box>
             )}
 
